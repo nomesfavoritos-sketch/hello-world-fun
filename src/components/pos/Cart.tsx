@@ -66,15 +66,20 @@ export function Cart({
   const handleCharge = () => {
     if (!lines.length) return;
     if (orderType === "Dine-in") {
-      setShowTableModal(true);
+      if (activeTable) {
+        saveTableOrder(activeTable);
+      } else {
+        setShowTableModal(true);
+      }
     } else {
       printNow();
       onClear();
     }
   };
 
-  const saveTableOrder = () => {
-    if (!tableNo.trim()) return;
+  const saveTableOrder = (forcedTable?: string) => {
+    const target = (forcedTable ?? tableNo).trim();
+    if (!target) return;
     const existing: OpenTable[] = (() => {
       try {
         return JSON.parse(localStorage.getItem(TABLES_KEY) || "[]");
@@ -82,8 +87,7 @@ export function Cart({
         return [];
       }
     })();
-    // Merge if same table already open
-    const idx = existing.findIndex((t) => t.tableNo === tableNo.trim());
+    const idx = existing.findIndex((t) => t.tableNo === target);
     if (idx >= 0) {
       const merged = [...existing[idx].lines];
       lines.forEach((l) => {
@@ -102,7 +106,7 @@ export function Cart({
       };
     } else {
       existing.unshift({
-        tableNo: tableNo.trim(),
+        tableNo: target,
         orderNo,
         lines,
         subtotal,
@@ -112,10 +116,12 @@ export function Cart({
       });
     }
     localStorage.setItem(TABLES_KEY, JSON.stringify(existing));
+    localStorage.removeItem("bj_active_table");
+    setActiveTable(null);
     setShowTableModal(false);
     setTableNo("");
     onClear();
-    setToast(`Order sent to Table ${existing[idx >= 0 ? idx : 0].tableNo}`);
+    setToast(idx >= 0 ? `Items added to Table ${target}` : `Order sent to Table ${target}`);
   };
 
   return (
