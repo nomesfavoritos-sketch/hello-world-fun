@@ -62,6 +62,7 @@ export function Cart({
   const printNow = () => {
     if (!lines.length) return;
     printThermalReceipt({ orderNo, lines, subtotal, tax, total, orderType });
+    recordSale({ orderNo, type: orderType, lines, subtotal, tax, total });
   };
 
   const handleCharge = () => {
