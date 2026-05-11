@@ -27,6 +27,7 @@ function saveTables(t: OpenTable[]) {
 }
 
 function TablesPage() {
+  const navigate = useNavigate();
   const [tables, setTables] = useState<OpenTable[]>([]);
   const [now, setNow] = useState(Date.now());
 
