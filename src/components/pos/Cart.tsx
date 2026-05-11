@@ -304,7 +304,7 @@ export function Cart({
           >
             {orderType === "Dine-in" ? <Utensils className="size-5" /> : <CreditCard className="size-5" />}
             <span className="font-display tracking-widest text-lg">
-              {orderType === "Dine-in" ? `SEND TO TABLE` : `CHARGE $${total.toFixed(2)}`}
+              {orderType === "Dine-in" ? (activeTable ? `ADD TO TABLE ${activeTable}` : `SEND TO TABLE`) : `CHARGE $${total.toFixed(2)}`}
             </span>
           </motion.button>
         </div>
