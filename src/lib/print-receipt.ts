@@ -1,4 +1,5 @@
 import type { CartLine } from "@/components/pos/Cart";
+import { getSettings } from "./settings-store";
 
 export type ReceiptOptions = {
   orderNo: string;
@@ -20,6 +21,7 @@ const escapeHtml = (s: string) =>
   );
 
 export function printThermalReceipt(opts: ReceiptOptions) {
+  const s = getSettings();
   const {
     orderNo,
     lines,
@@ -28,11 +30,13 @@ export function printThermalReceipt(opts: ReceiptOptions) {
     total,
     orderType = "Dine-in",
     width = "80mm",
-    shopName = "BJ PIZZA",
-    shopTagline = "Pizza Fast Food",
-    shopAddress = "Old Shujabad Road, Farooq Pura, Chowk Multan",
-    shopPhone = "0305-7924444 / 0315-7924444",
+    shopName = s.shopName,
+    shopTagline = s.shopTagline,
+    shopAddress = s.shopAddress,
+    shopPhone = s.shopPhone,
   } = opts;
+  const vatLabel = `VAT (${s.vatPct}%)`;
+  const footer = s.receiptFooter;
 
   const date = new Date();
   const dateStr = date.toLocaleString();
@@ -101,12 +105,11 @@ export function printThermalReceipt(opts: ReceiptOptions) {
   <hr />
   <table class="totals">
     <tr><td class="label">Subtotal</td><td class="val">${subtotal.toFixed(2)}</td></tr>
-    <tr><td class="label">VAT (5%)</td><td class="val">${tax.toFixed(2)}</td></tr>
+    <tr><td class="label">${escapeHtml(vatLabel)}</td><td class="val">${tax.toFixed(2)}</td></tr>
     <tr><td class="label grand">TOTAL</td><td class="val grand">${total.toFixed(2)}</td></tr>
   </table>
   <hr />
-  <div class="center footer bold">THANK YOU!</div>
-  <div class="center footer">Please come again</div>
+  <div class="center footer bold">${escapeHtml(footer)}</div>
 </body>
 </html>`;
 

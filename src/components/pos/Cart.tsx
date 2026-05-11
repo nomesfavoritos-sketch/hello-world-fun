@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Minus, Plus, Trash2, ShoppingBag, Sparkles, CreditCard, Printer, Utensils, X } from "lucide-react";
 import { printThermalReceipt } from "@/lib/print-receipt";
+import { recordSale } from "@/lib/sales-store";
 import { useEffect, useState } from "react";
 import type { MenuItem } from "@/lib/menu-data";
 
@@ -61,6 +62,7 @@ export function Cart({
   const printNow = () => {
     if (!lines.length) return;
     printThermalReceipt({ orderNo, lines, subtotal, tax, total, orderType });
+    recordSale({ orderNo, type: orderType, lines, subtotal, tax, total });
   };
 
   const handleCharge = () => {

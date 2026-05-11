@@ -4,6 +4,7 @@ import { Utensils, Printer, X, Clock, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PageShell } from "@/components/pos/PageShell";
 import { printThermalReceipt } from "@/lib/print-receipt";
+import { recordSale } from "@/lib/sales-store";
 import type { OpenTable } from "@/components/pos/Cart";
 
 export const Route = createFileRoute("/tables")({
@@ -45,13 +46,22 @@ function TablesPage() {
   const closeAndPrint = (tableNo: string) => {
     const t = tables.find((x) => x.tableNo === tableNo);
     if (!t) return;
+    const type = `Dine-in · Table ${t.tableNo}`;
     printThermalReceipt({
       orderNo: t.orderNo,
       lines: t.lines,
       subtotal: t.subtotal,
       tax: t.tax,
       total: t.total,
-      orderType: `Dine-in · Table ${t.tableNo}`,
+      orderType: type,
+    });
+    recordSale({
+      orderNo: t.orderNo,
+      type,
+      lines: t.lines,
+      subtotal: t.subtotal,
+      tax: t.tax,
+      total: t.total,
     });
     const next = tables.filter((x) => x.tableNo !== tableNo);
     setTables(next);
