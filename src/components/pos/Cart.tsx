@@ -40,10 +40,16 @@ export function Cart({
   const [orderType, setOrderType] = useState<"Dine-in" | "Takeaway" | "Delivery">("Dine-in");
   const [showTableModal, setShowTableModal] = useState(false);
   const [tableNo, setTableNo] = useState("");
+  const [activeTable, setActiveTable] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
     setOrderNo((Math.floor(Date.now() / 1000) % 10000).toString().padStart(4, "0"));
+    const at = localStorage.getItem("bj_active_table");
+    if (at) {
+      setActiveTable(at);
+      setOrderType("Dine-in");
+    }
   }, []);
 
   useEffect(() => {
@@ -60,15 +66,20 @@ export function Cart({
   const handleCharge = () => {
     if (!lines.length) return;
     if (orderType === "Dine-in") {
-      setShowTableModal(true);
+      if (activeTable) {
+        saveTableOrder(activeTable);
+      } else {
+        setShowTableModal(true);
+      }
     } else {
       printNow();
       onClear();
     }
   };
 
-  const saveTableOrder = () => {
-    if (!tableNo.trim()) return;
+  const saveTableOrder = (forcedTable?: string) => {
+    const target = (forcedTable ?? tableNo).trim();
+    if (!target) return;
     const existing: OpenTable[] = (() => {
       try {
         return JSON.parse(localStorage.getItem(TABLES_KEY) || "[]");
@@ -76,8 +87,7 @@ export function Cart({
         return [];
       }
     })();
-    // Merge if same table already open
-    const idx = existing.findIndex((t) => t.tableNo === tableNo.trim());
+    const idx = existing.findIndex((t) => t.tableNo === target);
     if (idx >= 0) {
       const merged = [...existing[idx].lines];
       lines.forEach((l) => {
@@ -96,7 +106,7 @@ export function Cart({
       };
     } else {
       existing.unshift({
-        tableNo: tableNo.trim(),
+        tableNo: target,
         orderNo,
         lines,
         subtotal,
@@ -106,10 +116,12 @@ export function Cart({
       });
     }
     localStorage.setItem(TABLES_KEY, JSON.stringify(existing));
+    localStorage.removeItem("bj_active_table");
+    setActiveTable(null);
     setShowTableModal(false);
     setTableNo("");
     onClear();
-    setToast(`Order sent to Table ${existing[idx >= 0 ? idx : 0].tableNo}`);
+    setToast(idx >= 0 ? `Items added to Table ${target}` : `Order sent to Table ${target}`);
   };
 
   return (
@@ -161,6 +173,25 @@ export function Cart({
             );
           })}
         </div>
+
+        {activeTable && (
+          <div className="mt-3 flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-gold/10 border border-gold/30">
+            <div className="flex items-center gap-2 text-xs">
+              <Utensils className="size-3.5 text-gold" />
+              <span className="text-gold font-display tracking-wider">ADDING TO TABLE {activeTable}</span>
+            </div>
+            <button
+              onClick={() => {
+                localStorage.removeItem("bj_active_table");
+                setActiveTable(null);
+              }}
+              className="text-muted-foreground hover:text-foreground"
+              title="Cancel — start a new order"
+            >
+              <X className="size-3.5" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Lines */}
@@ -273,7 +304,7 @@ export function Cart({
           >
             {orderType === "Dine-in" ? <Utensils className="size-5" /> : <CreditCard className="size-5" />}
             <span className="font-display tracking-widest text-lg">
-              {orderType === "Dine-in" ? `SEND TO TABLE` : `CHARGE $${total.toFixed(2)}`}
+              {orderType === "Dine-in" ? (activeTable ? `ADD TO TABLE ${activeTable}` : `SEND TO TABLE`) : `CHARGE $${total.toFixed(2)}`}
             </span>
           </motion.button>
         </div>
@@ -330,7 +361,7 @@ export function Cart({
               </div>
               <button
                 disabled={!tableNo.trim()}
-                onClick={saveTableOrder}
+                onClick={() => saveTableOrder()}
                 className="mt-4 w-full h-12 rounded-xl bg-primary text-primary-foreground font-semibold glow-red disabled:opacity-40 disabled:glow-red-none"
               >
                 Send to Table

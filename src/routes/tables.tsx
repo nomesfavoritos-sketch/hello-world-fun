@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { Utensils, Printer, X, Clock } from "lucide-react";
+import { Utensils, Printer, X, Clock, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PageShell } from "@/components/pos/PageShell";
 import { printThermalReceipt } from "@/lib/print-receipt";
@@ -27,6 +27,7 @@ function saveTables(t: OpenTable[]) {
 }
 
 function TablesPage() {
+  const navigate = useNavigate();
   const [tables, setTables] = useState<OpenTable[]>([]);
   const [now, setNow] = useState(Date.now());
 
@@ -62,6 +63,11 @@ function TablesPage() {
     const next = tables.filter((x) => x.tableNo !== tableNo);
     setTables(next);
     saveTables(next);
+  };
+
+  const addMore = (tableNo: string) => {
+    localStorage.setItem("bj_active_table", tableNo);
+    navigate({ to: "/" });
   };
 
   return (
@@ -155,11 +161,19 @@ function TablesPage() {
                       <X className="size-4" />
                     </button>
                     <button
+                      onClick={() => addMore(t.tableNo)}
+                      className="h-11 px-3 rounded-xl glass border border-white/10 hover:border-gold/40 text-foreground flex items-center gap-1.5 text-xs"
+                      title="Add more items to this table"
+                    >
+                      <Plus className="size-4 text-gold" />
+                      <span className="font-display tracking-widest hidden sm:inline">ADD</span>
+                    </button>
+                    <button
                       onClick={() => closeAndPrint(t.tableNo)}
                       className="flex-1 h-11 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center justify-center gap-2 glow-red"
                     >
                       <Printer className="size-4" />
-                      <span className="font-display tracking-widest text-sm">PRINT BILL & CLOSE</span>
+                      <span className="font-display tracking-widest text-sm">PRINT & CLOSE</span>
                     </button>
                   </div>
                 </motion.div>
