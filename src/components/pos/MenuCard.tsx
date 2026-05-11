@@ -36,7 +36,7 @@ export function MenuCard({ item, onAdd }: { item: MenuItem; onAdd: () => void })
 
         {item.tag && (
           <div
-            className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider border backdrop-blur-md ${
+            className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider border ${
               TAG_STYLES[item.tag]
             }`}
           >
