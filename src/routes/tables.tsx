@@ -65,6 +65,11 @@ function TablesPage() {
     saveTables(next);
   };
 
+  const addMore = (tableNo: string) => {
+    localStorage.setItem("bj_active_table", tableNo);
+    navigate({ to: "/" });
+  };
+
   return (
     <PageShell
       eyebrow="Floor Plan"
