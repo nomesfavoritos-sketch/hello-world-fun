@@ -160,14 +160,68 @@ function KitchenDash({ me }: { me: AppUser }) {
 }
 
 /* ---------------- Rider ---------------- */
+type RiderTrip = { id: string; customer: string; addr: string; amount: number; riderId: string | null; stage: string; eta: number; createdAt: number };
+
 function RiderDash({ me }: { me: AppUser }) {
+  const [trips, setTrips] = useState<RiderTrip[]>([]);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("bj_trips");
+      setTrips(raw ? (JSON.parse(raw) as RiderTrip[]) : []);
+    } catch {
+      setTrips([]);
+    }
+  }, []);
+
+  const mine = trips.filter((t) => t.riderId === me.id);
+  const active = mine.filter((t) => !["Delivered", "Cancelled"].includes(t.stage));
+  const today = new Date().toDateString();
+  const deliveredToday = mine.filter(
+    (t) => t.stage === "Delivered" && new Date(t.createdAt).toDateString() === today,
+  );
+
   return (
     <PageShell eyebrow={Eyebrow({ me })} title="RIDER STATION" subtitle="Assigned deliveries and live drop-offs.">
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        <Stat label="Active runs" value="—" icon={Bike} accent="red" />
-        <Stat label="Delivered today" value="—" icon={ArrowUpRight} accent="gold" />
-        <Stat label="Avg time" value="—" icon={Clock} />
+        <Stat label="Active runs" value={String(active.length)} icon={Bike} accent="red" />
+        <Stat label="Delivered today" value={String(deliveredToday.length)} icon={ArrowUpRight} accent="gold" />
+        <Stat label="Total assigned" value={String(mine.length)} icon={Clock} />
       </div>
+
+      <div className="glass-strong rounded-2xl p-5">
+        <div className="flex items-center justify-between mb-3">
+          <p className="font-display text-xl tracking-wider">MY ACTIVE DELIVERIES</p>
+          <Link to="/delivery" className="text-xs text-primary hover:underline flex items-center gap-1">
+            Open board <ArrowUpRight className="size-3" />
+          </Link>
+        </div>
+        {active.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-6 text-center">
+            No deliveries assigned to you. You'll see them here as soon as dispatch assigns one.
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {active.map((t) => (
+              <li key={t.id} className="glass rounded-xl p-3 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-mono-num font-bold">
+                    #{t.id} · {t.customer}
+                    <span className="ml-2 text-[10px] uppercase tracking-widest px-2 py-0.5 rounded bg-primary/15 text-primary">
+                      {t.stage}
+                    </span>
+                  </p>
+                  <p className="text-xs text-muted-foreground truncate">{t.addr}</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground">ETA</p>
+                  <p className="font-mono-num text-base gradient-text-gold">{t.eta}m</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
       <QuickLinks items={[{ to: "/delivery", label: "Open Delivery Board", icon: Bike }]} />
     </PageShell>
   );
