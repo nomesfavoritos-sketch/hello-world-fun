@@ -29,9 +29,9 @@ export function printThermalReceipt(opts: ReceiptOptions) {
     orderType = "Dine-in",
     width = "80mm",
     shopName = "BJ PIZZA",
-    shopTagline = "Premium Wood-Fired Kitchen",
-    shopAddress = "Main Boulevard, Lahore",
-    shopPhone = "+92 300 1234567",
+    shopTagline = "Pizza Fast Food",
+    shopAddress = "Old Shujabad Road, Farooq Pura, Chowk Multan",
+    shopPhone = "0305-7924444 / 0315-7924444",
   } = opts;
 
   const date = new Date();
