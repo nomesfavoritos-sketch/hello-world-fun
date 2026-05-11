@@ -1,0 +1,204 @@
+import { AnimatePresence, motion } from "framer-motion";
+import { Minus, Plus, Trash2, ShoppingBag, Sparkles, CreditCard, Printer } from "lucide-react";
+import { printThermalReceipt } from "@/lib/print-receipt";
+import { useEffect, useState } from "react";
+import type { MenuItem } from "@/lib/menu-data";
+
+export type CartLine = { item: MenuItem; qty: number };
+
+export function Cart({
+  lines,
+  onInc,
+  onDec,
+  onRemove,
+  onClear,
+}: {
+  lines: CartLine[];
+  onInc: (id: string) => void;
+  onDec: (id: string) => void;
+  onRemove: (id: string) => void;
+  onClear: () => void;
+}) {
+  const subtotal = lines.reduce((s, l) => s + l.item.price * l.qty, 0);
+  const tax = subtotal * 0.05;
+  const total = subtotal + tax;
+  const count = lines.reduce((s, l) => s + l.qty, 0);
+
+  const [orderNo, setOrderNo] = useState("0000");
+  const [orderType, setOrderType] = useState<"Dine-in" | "Takeaway" | "Delivery">("Dine-in");
+  useEffect(() => {
+    setOrderNo((Math.floor(Date.now() / 1000) % 10000).toString().padStart(4, "0"));
+  }, []);
+
+  const handlePrint = () => {
+    if (!lines.length) return;
+    printThermalReceipt({ orderNo, lines, subtotal, tax, total, orderType });
+  };
+
+  return (
+    <aside className="w-full lg:w-[400px] xl:w-[440px] shrink-0 glass-strong rounded-2xl flex flex-col h-[calc(100vh-2rem)] sticky top-4 overflow-hidden">
+      {/* Header */}
+      <div className="p-5 border-b border-white/5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="size-10 rounded-xl bg-primary/15 grid place-items-center">
+              <ShoppingBag className="size-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-display text-xl tracking-wider leading-none">CURRENT ORDER</p>
+              <p className="text-xs text-muted-foreground mt-1 font-mono-num">
+              #BJ-{orderNo} · {count} items
+              </p>
+            </div>
+          </div>
+          {lines.length > 0 && (
+            <button
+              onClick={onClear}
+              className="text-muted-foreground hover:text-primary transition-colors p-2"
+            >
+              <Trash2 className="size-4" />
+            </button>
+          )}
+        </div>
+
+        {/* Order type pills */}
+        <div className="grid grid-cols-3 gap-1.5 mt-4 p-1 bg-black/30 rounded-xl">
+          {(["Dine-in", "Takeaway", "Delivery"] as const).map((t) => {
+            const active = orderType === t;
+            return (
+              <button
+                key={t}
+                onClick={() => setOrderType(t)}
+                className={`relative py-2 text-xs font-medium rounded-lg transition-colors ${
+                  active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {active && (
+                  <motion.span
+                    layoutId="order-type"
+                    className="absolute inset-0 bg-white/5 rounded-lg border border-white/10"
+                  />
+                )}
+                <span className="relative">{t}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Lines */}
+      <div className="flex-1 overflow-y-auto scrollbar-luxe p-4 space-y-2">
+        <AnimatePresence mode="popLayout">
+          {lines.length === 0 ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="h-full grid place-items-center text-center px-6 py-20"
+            >
+              <div>
+                <div className="size-16 rounded-2xl glass mx-auto grid place-items-center mb-4">
+                  <Sparkles className="size-7 text-gold" />
+                </div>
+                <p className="font-display text-lg tracking-wider">START AN ORDER</p>
+                <p className="text-xs text-muted-foreground mt-2 max-w-[220px]">
+                  Tap any menu item to add it to the order. AI suggestions update live.
+                </p>
+              </div>
+            </motion.div>
+          ) : (
+            lines.map((line) => (
+              <motion.div
+                key={line.item.id}
+                layout
+                initial={{ opacity: 0, x: 20, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: -20, scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                className="flex items-center gap-3 p-2.5 rounded-xl glass hover:border-primary/20 transition-colors"
+              >
+                <img
+                  src={line.item.image}
+                  alt=""
+                  loading="lazy"
+                  className="size-14 rounded-lg object-cover shrink-0"
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{line.item.name}</p>
+                  <p className="text-xs text-gold font-mono-num mt-0.5">
+                    ${(line.item.price * line.qty).toFixed(2)}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1 bg-black/40 rounded-lg p-1">
+                  <button
+                    onClick={() => onDec(line.item.id)}
+                    className="size-7 grid place-items-center rounded-md hover:bg-white/5 text-muted-foreground hover:text-foreground"
+                  >
+                    <Minus className="size-3.5" />
+                  </button>
+                  <span className="w-6 text-center text-sm font-mono-num font-semibold">
+                    {line.qty}
+                  </span>
+                  <button
+                    onClick={() => onInc(line.item.id)}
+                    className="size-7 grid place-items-center rounded-md hover:bg-primary/20 text-primary"
+                  >
+                    <Plus className="size-3.5" />
+                  </button>
+                </div>
+                <button
+                  onClick={() => onRemove(line.item.id)}
+                  className="text-muted-foreground/50 hover:text-primary transition-colors p-1"
+                >
+                  <Trash2 className="size-3.5" />
+                </button>
+              </motion.div>
+            ))
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Totals */}
+      <div className="border-t border-white/5 p-5 space-y-4">
+        <div className="space-y-1.5 text-sm">
+          <div className="flex justify-between text-muted-foreground">
+            <span>Subtotal</span>
+            <span className="font-mono-num">${subtotal.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-muted-foreground">
+            <span>VAT (5%)</span>
+            <span className="font-mono-num">${tax.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between items-end pt-3 border-t border-white/5">
+            <span className="font-display tracking-wider text-base">TOTAL</span>
+            <span className="font-mono-num font-bold text-2xl gradient-text-gold">
+              ${total.toFixed(2)}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex gap-2">
+          <button
+            onClick={handlePrint}
+            disabled={lines.length === 0}
+            title="Print thermal receipt (80mm)"
+            className="h-14 px-4 rounded-xl glass-strong border border-white/10 hover:border-gold/40 text-foreground flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <Printer className="size-5 text-gold" />
+            <span className="font-display tracking-widest text-xs hidden sm:inline">PRINT</span>
+          </button>
+          <motion.button
+            whileHover={{ scale: lines.length ? 1.01 : 1 }}
+            whileTap={{ scale: lines.length ? 0.99 : 1 }}
+            disabled={lines.length === 0}
+            onClick={handlePrint}
+            className="flex-1 h-14 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center justify-center gap-2 glow-red disabled:opacity-40 disabled:glow-red-none disabled:cursor-not-allowed transition-opacity"
+          >
+            <CreditCard className="size-5" />
+            <span className="font-display tracking-widest text-lg">CHARGE ${total.toFixed(2)}</span>
+          </motion.button>
+        </div>
+      </div>
+    </aside>
+  );
+}
