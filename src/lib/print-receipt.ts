@@ -105,12 +105,11 @@ export function printThermalReceipt(opts: ReceiptOptions) {
   <hr />
   <table class="totals">
     <tr><td class="label">Subtotal</td><td class="val">${subtotal.toFixed(2)}</td></tr>
-    <tr><td class="label">VAT (5%)</td><td class="val">${tax.toFixed(2)}</td></tr>
+    <tr><td class="label">${escapeHtml(vatLabel)}</td><td class="val">${tax.toFixed(2)}</td></tr>
     <tr><td class="label grand">TOTAL</td><td class="val grand">${total.toFixed(2)}</td></tr>
   </table>
   <hr />
-  <div class="center footer bold">THANK YOU!</div>
-  <div class="center footer">Please come again</div>
+  <div class="center footer bold">${escapeHtml(footer)}</div>
 </body>
 </html>`;
 
