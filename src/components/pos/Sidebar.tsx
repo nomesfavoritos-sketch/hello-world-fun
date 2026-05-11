@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -10,20 +11,45 @@ import {
   Settings,
   Flame,
   Utensils,
+  Users,
+  LogOut,
 } from "lucide-react";
+import {
+  getCurrentUser,
+  logout,
+  ROLE_LABELS,
+  ROLE_NAV,
+  type AppUser,
+} from "@/lib/users-store";
 
 const NAV = [
-  { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
-  { icon: ShoppingBag, label: "POS", to: "/" },
-  { icon: Utensils, label: "Tables", to: "/tables" },
-  { icon: Pizza, label: "Menu", to: "/menu" },
-  { icon: ChefHat, label: "Kitchen", to: "/kitchen" },
-  { icon: Bike, label: "Delivery", to: "/delivery" },
-  { icon: BarChart3, label: "Reports", to: "/reports" },
-  { icon: Settings, label: "Settings", to: "/settings" },
-] as const;
+  { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" as const },
+  { icon: ShoppingBag, label: "POS", to: "/" as const },
+  { icon: Utensils, label: "Tables", to: "/tables" as const },
+  { icon: Pizza, label: "Menu", to: "/menu" as const },
+  { icon: ChefHat, label: "Kitchen", to: "/kitchen" as const },
+  { icon: Bike, label: "Delivery", to: "/delivery" as const },
+  { icon: BarChart3, label: "Reports", to: "/reports" as const },
+  { icon: Users, label: "Users", to: "/users" as const },
+  { icon: Settings, label: "Settings", to: "/settings" as const },
+];
 
 export function Sidebar() {
+  const [me, setMe] = useState<AppUser | null>(null);
+  const nav = useNavigate();
+
+  useEffect(() => {
+    setMe(getCurrentUser());
+  }, []);
+
+  const allowed = me ? ROLE_NAV[me.role] : [];
+  const items = NAV.filter((i) => allowed.includes(i.to));
+
+  const onLogout = () => {
+    logout();
+    nav({ to: "/login" });
+  };
+
   return (
     <aside className="hidden lg:flex flex-col w-20 xl:w-64 shrink-0 glass-strong rounded-2xl p-4 gap-2 h-[calc(100vh-2rem)] sticky top-4">
       <Link to="/" className="flex items-center gap-3 px-2 py-3 mb-2">
@@ -41,8 +67,8 @@ export function Sidebar() {
         </div>
       </Link>
 
-      <nav className="flex flex-col gap-1 flex-1">
-        {NAV.map((item) => (
+      <nav className="flex flex-col gap-1 flex-1 overflow-y-auto">
+        {items.map((item) => (
           <Link
             key={item.label}
             to={item.to}
@@ -74,16 +100,37 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="hidden xl:block glass rounded-xl p-3 mt-2">
-        <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-          Branch
-        </p>
-        <p className="text-sm font-medium mt-1">Downtown · DXB</p>
-        <div className="flex items-center gap-1.5 mt-2">
-          <span className="size-1.5 rounded-full bg-emerald-400" />
-          <span className="text-xs text-muted-foreground">Online · 12 staff</span>
+      {me && (
+        <div className="hidden xl:block glass rounded-xl p-3 mt-2">
+          <div className="flex items-center gap-2">
+            <span className="size-8 rounded-full bg-gradient-to-br from-primary to-gold grid place-items-center text-[10px] font-bold">
+              {me.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs truncate">{me.name}</p>
+              <p className="text-[10px] text-primary uppercase tracking-widest">
+                {ROLE_LABELS[me.role]}
+              </p>
+            </div>
+            <button
+              onClick={onLogout}
+              className="size-7 grid place-items-center rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary"
+              title="Logout"
+            >
+              <LogOut className="size-4" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
+      {me && (
+        <button
+          onClick={onLogout}
+          className="xl:hidden size-10 mx-auto grid place-items-center rounded-xl hover:bg-primary/10 text-muted-foreground hover:text-primary"
+          title="Logout"
+        >
+          <LogOut className="size-5" />
+        </button>
+      )}
     </aside>
   );
 }

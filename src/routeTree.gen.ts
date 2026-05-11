@@ -9,15 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UsersRouteImport } from './routes/users'
 import { Route as TablesRouteImport } from './routes/tables'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as MenuRouteImport } from './routes/menu'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as KitchenRouteImport } from './routes/kitchen'
 import { Route as DeliveryRouteImport } from './routes/delivery'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 
+const UsersRoute = UsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TablesRoute = TablesRouteImport.update({
   id: '/tables',
   path: '/tables',
@@ -36,6 +43,11 @@ const ReportsRoute = ReportsRouteImport.update({
 const MenuRoute = MenuRouteImport.update({
   id: '/menu',
   path: '/menu',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KitchenRoute = KitchenRouteImport.update({
@@ -64,20 +76,24 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/delivery': typeof DeliveryRoute
   '/kitchen': typeof KitchenRoute
+  '/login': typeof LoginRoute
   '/menu': typeof MenuRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
   '/tables': typeof TablesRoute
+  '/users': typeof UsersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/delivery': typeof DeliveryRoute
   '/kitchen': typeof KitchenRoute
+  '/login': typeof LoginRoute
   '/menu': typeof MenuRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
   '/tables': typeof TablesRoute
+  '/users': typeof UsersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -85,10 +101,12 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/delivery': typeof DeliveryRoute
   '/kitchen': typeof KitchenRoute
+  '/login': typeof LoginRoute
   '/menu': typeof MenuRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
   '/tables': typeof TablesRoute
+  '/users': typeof UsersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,30 +115,36 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/delivery'
     | '/kitchen'
+    | '/login'
     | '/menu'
     | '/reports'
     | '/settings'
     | '/tables'
+    | '/users'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/dashboard'
     | '/delivery'
     | '/kitchen'
+    | '/login'
     | '/menu'
     | '/reports'
     | '/settings'
     | '/tables'
+    | '/users'
   id:
     | '__root__'
     | '/'
     | '/dashboard'
     | '/delivery'
     | '/kitchen'
+    | '/login'
     | '/menu'
     | '/reports'
     | '/settings'
     | '/tables'
+    | '/users'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -128,14 +152,23 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   DeliveryRoute: typeof DeliveryRoute
   KitchenRoute: typeof KitchenRoute
+  LoginRoute: typeof LoginRoute
   MenuRoute: typeof MenuRoute
   ReportsRoute: typeof ReportsRoute
   SettingsRoute: typeof SettingsRoute
   TablesRoute: typeof TablesRoute
+  UsersRoute: typeof UsersRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/users': {
+      id: '/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof UsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tables': {
       id: '/tables'
       path: '/tables'
@@ -162,6 +195,13 @@ declare module '@tanstack/react-router' {
       path: '/menu'
       fullPath: '/menu'
       preLoaderRoute: typeof MenuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/kitchen': {
@@ -200,11 +240,23 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   DeliveryRoute: DeliveryRoute,
   KitchenRoute: KitchenRoute,
+  LoginRoute: LoginRoute,
   MenuRoute: MenuRoute,
   ReportsRoute: ReportsRoute,
   SettingsRoute: SettingsRoute,
   TablesRoute: TablesRoute,
+  UsersRoute: UsersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
