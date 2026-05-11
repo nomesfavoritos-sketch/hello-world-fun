@@ -107,15 +107,6 @@ export function printThermalReceipt(opts: ReceiptOptions) {
   <hr />
   <div class="center footer bold">THANK YOU!</div>
   <div class="center footer">Please come again</div>
-  <script>
-    window.onload = function () {
-      setTimeout(function () {
-        window.focus();
-        window.print();
-        setTimeout(function () { window.close(); }, 300);
-      }, 150);
-    };
-  </script>
 </body>
 </html>`;
 
