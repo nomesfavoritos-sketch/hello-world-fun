@@ -4,11 +4,34 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
+  useNavigate,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { getCurrentUser } from "@/lib/users-store";
 
 import appCss from "../styles.css?url";
+
+const PUBLIC_PATHS = new Set(["/login"]);
+
+function AuthGate({ children }: { children: React.ReactNode }) {
+  const nav = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const me = getCurrentUser();
+    if (!me && !PUBLIC_PATHS.has(pathname)) {
+      nav({ to: "/login" });
+    } else if (me && pathname === "/login") {
+      nav({ to: "/dashboard" });
+    }
+  }, [pathname, nav]);
+
+  return <>{children}</>;
+}
 
 function NotFoundComponent() {
   return (
@@ -113,7 +136,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <AuthGate>
+        <Outlet />
+      </AuthGate>
     </QueryClientProvider>
   );
 }
