@@ -342,7 +342,7 @@ export function Cart({
               </div>
               <button
                 disabled={!tableNo.trim()}
-                onClick={saveTableOrder}
+                onClick={() => saveTableOrder()}
                 className="mt-4 w-full h-12 rounded-xl bg-primary text-primary-foreground font-semibold glow-red disabled:opacity-40 disabled:glow-red-none"
               >
                 Send to Table
