@@ -278,7 +278,7 @@ function MenuEditor({
   const canSave = draft.name.trim() && draft.desc.trim() && Number(draft.price) > 0;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/70 backdrop-blur-xl grid place-items-center p-4">
+    <div className="fixed inset-0 z-50 bg-background/90 grid place-items-center p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 16 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
