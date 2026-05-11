@@ -1,4 +1,5 @@
 import type { CartLine } from "@/components/pos/Cart";
+import { getSettings } from "./settings-store";
 
 export type ReceiptOptions = {
   orderNo: string;
@@ -20,6 +21,7 @@ const escapeHtml = (s: string) =>
   );
 
 export function printThermalReceipt(opts: ReceiptOptions) {
+  const s = getSettings();
   const {
     orderNo,
     lines,
@@ -28,11 +30,13 @@ export function printThermalReceipt(opts: ReceiptOptions) {
     total,
     orderType = "Dine-in",
     width = "80mm",
-    shopName = "BJ PIZZA",
-    shopTagline = "Pizza Fast Food",
-    shopAddress = "Old Shujabad Road, Farooq Pura, Chowk Multan",
-    shopPhone = "0305-7924444 / 0315-7924444",
+    shopName = s.shopName,
+    shopTagline = s.shopTagline,
+    shopAddress = s.shopAddress,
+    shopPhone = s.shopPhone,
   } = opts;
+  const vatLabel = `VAT (${s.vatPct}%)`;
+  const footer = s.receiptFooter;
 
   const date = new Date();
   const dateStr = date.toLocaleString();
