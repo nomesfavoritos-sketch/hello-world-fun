@@ -1,10 +1,22 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Minus, Plus, Trash2, ShoppingBag, Sparkles, CreditCard, Printer } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, Sparkles, CreditCard, Printer, Utensils, X } from "lucide-react";
 import { printThermalReceipt } from "@/lib/print-receipt";
 import { useEffect, useState } from "react";
 import type { MenuItem } from "@/lib/menu-data";
 
 export type CartLine = { item: MenuItem; qty: number };
+
+export type OpenTable = {
+  tableNo: string;
+  orderNo: string;
+  lines: CartLine[];
+  subtotal: number;
+  tax: number;
+  total: number;
+  openedAt: number;
+};
+
+const TABLES_KEY = "bj_open_tables";
 
 export function Cart({
   lines,
@@ -26,13 +38,78 @@ export function Cart({
 
   const [orderNo, setOrderNo] = useState("0000");
   const [orderType, setOrderType] = useState<"Dine-in" | "Takeaway" | "Delivery">("Dine-in");
+  const [showTableModal, setShowTableModal] = useState(false);
+  const [tableNo, setTableNo] = useState("");
+  const [toast, setToast] = useState<string | null>(null);
+
   useEffect(() => {
     setOrderNo((Math.floor(Date.now() / 1000) % 10000).toString().padStart(4, "0"));
   }, []);
 
-  const handlePrint = () => {
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const printNow = () => {
     if (!lines.length) return;
     printThermalReceipt({ orderNo, lines, subtotal, tax, total, orderType });
+  };
+
+  const handleCharge = () => {
+    if (!lines.length) return;
+    if (orderType === "Dine-in") {
+      setShowTableModal(true);
+    } else {
+      printNow();
+      onClear();
+    }
+  };
+
+  const saveTableOrder = () => {
+    if (!tableNo.trim()) return;
+    const existing: OpenTable[] = (() => {
+      try {
+        return JSON.parse(localStorage.getItem(TABLES_KEY) || "[]");
+      } catch {
+        return [];
+      }
+    })();
+    // Merge if same table already open
+    const idx = existing.findIndex((t) => t.tableNo === tableNo.trim());
+    if (idx >= 0) {
+      const merged = [...existing[idx].lines];
+      lines.forEach((l) => {
+        const m = merged.find((x) => x.item.id === l.item.id);
+        if (m) m.qty += l.qty;
+        else merged.push({ ...l });
+      });
+      const sub = merged.reduce((s, l) => s + l.item.price * l.qty, 0);
+      const tx = sub * 0.05;
+      existing[idx] = {
+        ...existing[idx],
+        lines: merged,
+        subtotal: sub,
+        tax: tx,
+        total: sub + tx,
+      };
+    } else {
+      existing.unshift({
+        tableNo: tableNo.trim(),
+        orderNo,
+        lines,
+        subtotal,
+        tax,
+        total,
+        openedAt: Date.now(),
+      });
+    }
+    localStorage.setItem(TABLES_KEY, JSON.stringify(existing));
+    setShowTableModal(false);
+    setTableNo("");
+    onClear();
+    setToast(`Order sent to Table ${existing[idx >= 0 ? idx : 0].tableNo}`);
   };
 
   return (
@@ -179,7 +256,7 @@ export function Cart({
 
         <div className="flex gap-2">
           <button
-            onClick={handlePrint}
+            onClick={printNow}
             disabled={lines.length === 0}
             title="Print thermal receipt (80mm)"
             className="h-14 px-4 rounded-xl glass-strong border border-white/10 hover:border-gold/40 text-foreground flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
@@ -191,14 +268,90 @@ export function Cart({
             whileHover={{ scale: lines.length ? 1.01 : 1 }}
             whileTap={{ scale: lines.length ? 0.99 : 1 }}
             disabled={lines.length === 0}
-            onClick={handlePrint}
+            onClick={handleCharge}
             className="flex-1 h-14 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center justify-center gap-2 glow-red disabled:opacity-40 disabled:glow-red-none disabled:cursor-not-allowed transition-opacity"
           >
-            <CreditCard className="size-5" />
-            <span className="font-display tracking-widest text-lg">CHARGE ${total.toFixed(2)}</span>
+            {orderType === "Dine-in" ? <Utensils className="size-5" /> : <CreditCard className="size-5" />}
+            <span className="font-display tracking-widest text-lg">
+              {orderType === "Dine-in" ? `SEND TO TABLE` : `CHARGE $${total.toFixed(2)}`}
+            </span>
           </motion.button>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showTableModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-background/90 grid place-items-center p-4"
+            onClick={() => setShowTableModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 10 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 10 }}
+              onClick={(e) => e.stopPropagation()}
+              className="glass-strong rounded-2xl p-6 w-full max-w-sm border border-white/10"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Utensils className="size-5 text-primary" />
+                  <p className="font-display tracking-wider text-lg">ASSIGN TABLE</p>
+                </div>
+                <button onClick={() => setShowTableModal(false)} className="text-muted-foreground hover:text-foreground">
+                  <X className="size-5" />
+                </button>
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">
+                Order will be sent to kitchen. Bill will print when table is closed.
+              </p>
+              <input
+                autoFocus
+                value={tableNo}
+                onChange={(e) => setTableNo(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && saveTableOrder()}
+                placeholder="Table number e.g. 5"
+                className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-3 text-base focus:border-primary/40 focus:outline-none"
+              />
+              <div className="grid grid-cols-6 gap-1.5 mt-3">
+                {Array.from({ length: 12 }, (_, i) => (i + 1).toString()).map((n) => (
+                  <button
+                    key={n}
+                    onClick={() => setTableNo(n)}
+                    className={`py-2 rounded-md text-sm font-mono-num border ${
+                      tableNo === n ? "border-primary bg-primary/15 text-primary" : "border-white/10 hover:border-white/20"
+                    }`}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+              <button
+                disabled={!tableNo.trim()}
+                onClick={saveTableOrder}
+                className="mt-4 w-full h-12 rounded-xl bg-primary text-primary-foreground font-semibold glow-red disabled:opacity-40 disabled:glow-red-none"
+              >
+                Send to Table
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 glass-strong border border-emerald-400/30 rounded-xl px-4 py-3 text-sm text-emerald-300"
+          >
+            {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </aside>
   );
 }

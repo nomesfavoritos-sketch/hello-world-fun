@@ -9,11 +9,13 @@ import {
   BarChart3,
   Settings,
   Flame,
+  Utensils,
 } from "lucide-react";
 
 const NAV = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
   { icon: ShoppingBag, label: "POS", to: "/" },
+  { icon: Utensils, label: "Tables", to: "/tables" },
   { icon: Pizza, label: "Menu", to: "/menu" },
   { icon: ChefHat, label: "Kitchen", to: "/kitchen" },
   { icon: Bike, label: "Delivery", to: "/delivery" },
