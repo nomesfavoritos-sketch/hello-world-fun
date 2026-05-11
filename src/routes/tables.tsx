@@ -4,6 +4,7 @@ import { Utensils, Printer, X, Clock, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PageShell } from "@/components/pos/PageShell";
 import { printThermalReceipt } from "@/lib/print-receipt";
+import { recordSale } from "@/lib/sales-store";
 import type { OpenTable } from "@/components/pos/Cart";
 
 export const Route = createFileRoute("/tables")({
