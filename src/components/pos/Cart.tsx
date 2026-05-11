@@ -173,6 +173,25 @@ export function Cart({
             );
           })}
         </div>
+
+        {activeTable && (
+          <div className="mt-3 flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-gold/10 border border-gold/30">
+            <div className="flex items-center gap-2 text-xs">
+              <Utensils className="size-3.5 text-gold" />
+              <span className="text-gold font-display tracking-wider">ADDING TO TABLE {activeTable}</span>
+            </div>
+            <button
+              onClick={() => {
+                localStorage.removeItem("bj_active_table");
+                setActiveTable(null);
+              }}
+              className="text-muted-foreground hover:text-foreground"
+              title="Cancel — start a new order"
+            >
+              <X className="size-3.5" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Lines */}
