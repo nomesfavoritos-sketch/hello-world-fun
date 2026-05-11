@@ -1,10 +1,22 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Minus, Plus, Trash2, ShoppingBag, Sparkles, CreditCard, Printer } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, Sparkles, CreditCard, Printer, Utensils, X } from "lucide-react";
 import { printThermalReceipt } from "@/lib/print-receipt";
 import { useEffect, useState } from "react";
 import type { MenuItem } from "@/lib/menu-data";
 
 export type CartLine = { item: MenuItem; qty: number };
+
+export type OpenTable = {
+  tableNo: string;
+  orderNo: string;
+  lines: CartLine[];
+  subtotal: number;
+  tax: number;
+  total: number;
+  openedAt: number;
+};
+
+const TABLES_KEY = "bj_open_tables";
 
 export function Cart({
   lines,
@@ -26,13 +38,78 @@ export function Cart({
 
   const [orderNo, setOrderNo] = useState("0000");
   const [orderType, setOrderType] = useState<"Dine-in" | "Takeaway" | "Delivery">("Dine-in");
+  const [showTableModal, setShowTableModal] = useState(false);
+  const [tableNo, setTableNo] = useState("");
+  const [toast, setToast] = useState<string | null>(null);
+
   useEffect(() => {
     setOrderNo((Math.floor(Date.now() / 1000) % 10000).toString().padStart(4, "0"));
   }, []);
 
-  const handlePrint = () => {
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const printNow = () => {
     if (!lines.length) return;
     printThermalReceipt({ orderNo, lines, subtotal, tax, total, orderType });
+  };
+
+  const handleCharge = () => {
+    if (!lines.length) return;
+    if (orderType === "Dine-in") {
+      setShowTableModal(true);
+    } else {
+      printNow();
+      onClear();
+    }
+  };
+
+  const saveTableOrder = () => {
+    if (!tableNo.trim()) return;
+    const existing: OpenTable[] = (() => {
+      try {
+        return JSON.parse(localStorage.getItem(TABLES_KEY) || "[]");
+      } catch {
+        return [];
+      }
+    })();
+    // Merge if same table already open
+    const idx = existing.findIndex((t) => t.tableNo === tableNo.trim());
+    if (idx >= 0) {
+      const merged = [...existing[idx].lines];
+      lines.forEach((l) => {
+        const m = merged.find((x) => x.item.id === l.item.id);
+        if (m) m.qty += l.qty;
+        else merged.push({ ...l });
+      });
+      const sub = merged.reduce((s, l) => s + l.item.price * l.qty, 0);
+      const tx = sub * 0.05;
+      existing[idx] = {
+        ...existing[idx],
+        lines: merged,
+        subtotal: sub,
+        tax: tx,
+        total: sub + tx,
+      };
+    } else {
+      existing.unshift({
+        tableNo: tableNo.trim(),
+        orderNo,
+        lines,
+        subtotal,
+        tax,
+        total,
+        openedAt: Date.now(),
+      });
+    }
+    localStorage.setItem(TABLES_KEY, JSON.stringify(existing));
+    setShowTableModal(false);
+    setTableNo("");
+    onClear();
+    setToast(`Order sent to Table ${existing[idx >= 0 ? idx : 0].tableNo}`);
   };
 
   return (
