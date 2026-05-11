@@ -46,13 +46,22 @@ function TablesPage() {
   const closeAndPrint = (tableNo: string) => {
     const t = tables.find((x) => x.tableNo === tableNo);
     if (!t) return;
+    const type = `Dine-in · Table ${t.tableNo}`;
     printThermalReceipt({
       orderNo: t.orderNo,
       lines: t.lines,
       subtotal: t.subtotal,
       tax: t.tax,
       total: t.total,
-      orderType: `Dine-in · Table ${t.tableNo}`,
+      orderType: type,
+    });
+    recordSale({
+      orderNo: t.orderNo,
+      type,
+      lines: t.lines,
+      subtotal: t.subtotal,
+      tax: t.tax,
+      total: t.total,
     });
     const next = tables.filter((x) => x.tableNo !== tableNo);
     setTables(next);
