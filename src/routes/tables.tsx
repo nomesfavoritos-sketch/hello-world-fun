@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { Utensils, Printer, X, Clock } from "lucide-react";
+import { Utensils, Printer, X, Clock, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PageShell } from "@/components/pos/PageShell";
 import { printThermalReceipt } from "@/lib/print-receipt";
