@@ -57,13 +57,17 @@ export function Sidebar() {
     <aside className="hidden lg:flex flex-col w-20 xl:w-64 shrink-0 glass-strong rounded-2xl p-4 gap-2 h-[calc(100vh-2rem)] sticky top-4">
       <Link to="/" className="flex items-center gap-3 px-2 py-3 mb-2">
         <div className="relative">
-          <div className="size-10 rounded-xl bg-primary grid place-items-center glow-red">
-            <Flame className="size-5 text-primary-foreground" />
+          <div className="size-10 rounded-xl bg-primary grid place-items-center glow-red overflow-hidden">
+            {logo ? (
+              <img src={logo} alt={shopName} className="size-full object-contain" />
+            ) : (
+              <Flame className="size-5 text-primary-foreground" />
+            )}
           </div>
           <span className="absolute -top-1 -right-1 size-3 rounded-full bg-gold pulse-glow" />
         </div>
         <div className="hidden xl:block">
-          <p className="font-display text-xl leading-none tracking-wider">BJ PIZZA</p>
+          <p className="font-display text-xl leading-none tracking-wider">{shopName}</p>
           <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-1">
             Restaurant OS
           </p>
