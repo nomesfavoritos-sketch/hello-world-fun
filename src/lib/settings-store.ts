@@ -99,3 +99,21 @@ export function useCurrency(): string {
   }, []);
   return sym;
 }
+
+export function useLogo(): string {
+  const [logo, setLogo] = useState<string>(() => {
+    if (typeof window === "undefined") return "";
+    return getSettings().logoDataUrl || "";
+  });
+  useEffect(() => {
+    const sync = () => setLogo(getSettings().logoDataUrl || "");
+    sync();
+    window.addEventListener("bj:settings-changed", sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener("bj:settings-changed", sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, []);
+  return logo;
+}
