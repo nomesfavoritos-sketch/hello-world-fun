@@ -140,7 +140,7 @@ function TablesPage() {
                           <span className="text-gold font-mono-num">{l.qty}×</span> {l.item.name}
                         </span>
                         <span className="font-mono-num text-muted-foreground">
-                          ${(l.item.price * l.qty).toFixed(2)}
+                          {sym} {(l.item.price * l.qty).toFixed(2)}
                         </span>
                       </div>
                     ))}
@@ -149,16 +149,16 @@ function TablesPage() {
                   <div className="border-t border-white/5 mt-4 pt-3 space-y-1 text-xs">
                     <div className="flex justify-between text-muted-foreground">
                       <span>Subtotal</span>
-                      <span className="font-mono-num">${t.subtotal.toFixed(2)}</span>
+                      <span className="font-mono-num">{sym} {t.subtotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-muted-foreground">
                       <span>VAT (5%)</span>
-                      <span className="font-mono-num">${t.tax.toFixed(2)}</span>
+                      <span className="font-mono-num">{sym} {t.tax.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-end pt-1">
                       <span className="font-display tracking-wider">TOTAL</span>
                       <span className="font-mono-num text-xl gradient-text-gold font-bold">
-                        ${t.total.toFixed(2)}
+                        {sym} {t.total.toFixed(2)}
                       </span>
                     </div>
                   </div>

@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Minus, Plus, Trash2, ShoppingBag, Sparkles, CreditCard, Printer, Utensils, X } from "lucide-react";
 import { printThermalReceipt } from "@/lib/print-receipt";
 import { recordSale } from "@/lib/sales-store";
+import { useCurrency } from "@/lib/settings-store";
 import { useEffect, useState } from "react";
 import type { MenuItem } from "@/lib/menu-data";
 
@@ -32,6 +33,7 @@ export function Cart({
   onRemove: (id: string) => void;
   onClear: () => void;
 }) {
+  const sym = useCurrency();
   const subtotal = lines.reduce((s, l) => s + l.item.price * l.qty, 0);
   const tax = subtotal * 0.05;
   const total = subtotal + tax;
@@ -236,7 +238,7 @@ export function Cart({
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{line.item.name}</p>
                   <p className="text-xs text-gold font-mono-num mt-0.5">
-                    ${(line.item.price * line.qty).toFixed(2)}
+                    {sym} {(line.item.price * line.qty).toFixed(2)}
                   </p>
                 </div>
                 <div className="flex items-center gap-1 bg-black/40 rounded-lg p-1">
@@ -273,16 +275,16 @@ export function Cart({
         <div className="space-y-1.5 text-sm">
           <div className="flex justify-between text-muted-foreground">
             <span>Subtotal</span>
-            <span className="font-mono-num">${subtotal.toFixed(2)}</span>
+            <span className="font-mono-num">{sym} {subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-muted-foreground">
             <span>VAT (5%)</span>
-            <span className="font-mono-num">${tax.toFixed(2)}</span>
+            <span className="font-mono-num">{sym} {tax.toFixed(2)}</span>
           </div>
           <div className="flex justify-between items-end pt-3 border-t border-white/5">
             <span className="font-display tracking-wider text-base">TOTAL</span>
             <span className="font-mono-num font-bold text-2xl gradient-text-gold">
-              ${total.toFixed(2)}
+              {sym} {total.toFixed(2)}
             </span>
           </div>
         </div>
@@ -306,7 +308,7 @@ export function Cart({
           >
             {orderType === "Dine-in" ? <Utensils className="size-5" /> : <CreditCard className="size-5" />}
             <span className="font-display tracking-widest text-lg">
-              {orderType === "Dine-in" ? (activeTable ? `ADD TO TABLE ${activeTable}` : `SEND TO TABLE`) : `CHARGE $${total.toFixed(2)}`}
+              {orderType === "Dine-in" ? (activeTable ? `ADD TO TABLE ${activeTable}` : `SEND TO TABLE`) : `CHARGE ${sym} ${total.toFixed(2)}`}
             </span>
           </motion.button>
         </div>
