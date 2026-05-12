@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Building2, Receipt, Printer, Users, Bell, Globe, Check, Database, Trash2 } from "lucide-react";
+import { Building2, Receipt, Printer, Users, Bell, Globe, Check, Database, Trash2, Image as ImageIcon, Upload, X } from "lucide-react";
 import { PageShell } from "@/components/pos/PageShell";
 import { DEFAULT_SETTINGS, getSettings, saveSettings, type ShopSettings } from "@/lib/settings-store";
 import { clearSales, getSales } from "@/lib/sales-store";
