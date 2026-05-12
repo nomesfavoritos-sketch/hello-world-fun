@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Globe, Phone, MapPin, Clock, CheckCircle2, X, ChevronRight, Bike, Store, Utensils, ExternalLink, Trash2 } from "lucide-react";
@@ -6,14 +7,11 @@ import { PageShell } from "@/components/pos/PageShell";
 import { useCurrency } from "@/lib/settings-store";
 import { getCurrentUser } from "@/lib/users-store";
 import {
-  getOnlineOrders,
-  onOnlineOrdersChange,
-  updateOnlineOrderStatus,
-  deleteOnlineOrder,
   pushToDeliveryTrips,
   type OnlineOrder,
   type OnlineOrderStatus,
 } from "@/lib/online-orders-store";
+import { fetchOnlineOrders, removeOnlineOrder, setOnlineOrderStatus } from "@/lib/online-orders.functions";
 
 export const Route = createFileRoute("/online-orders")({
   head: () => ({ meta: [{ title: "Online Orders · BJ Pizza" }] }),
@@ -38,13 +36,25 @@ const typeIcon = (t: OnlineOrder["type"]) => (t === "Delivery" ? Bike : t === "P
 
 function OnlineOrdersPage() {
   const sym = useCurrency();
-  const [orders, setOrders] = useState<OnlineOrder[]>(() => getOnlineOrders());
+  const loadOnlineOrders = useServerFn(fetchOnlineOrders);
+  const saveOnlineOrderStatus = useServerFn(setOnlineOrderStatus);
+  const deleteOnlineOrder = useServerFn(removeOnlineOrder);
+  const [orders, setOrders] = useState<OnlineOrder[]>([]);
   const [filter, setFilter] = useState<"active" | "completed" | "all">("active");
 
   useEffect(() => {
-    const off = onOnlineOrdersChange(() => setOrders(getOnlineOrders()));
-    return off;
-  }, []);
+    let alive = true;
+    const load = async () => {
+      const list = await loadOnlineOrders();
+      if (alive) setOrders(list);
+    };
+    load();
+    const timer = window.setInterval(load, 8000);
+    return () => {
+      alive = false;
+      window.clearInterval(timer);
+    };
+  }, [loadOnlineOrders]);
 
   const me = getCurrentUser();
 
@@ -61,16 +71,22 @@ function OnlineOrdersPage() {
     revenue: orders.filter((o) => o.status === "Completed").reduce((s, o) => s + o.total, 0),
   }), [orders]);
 
-  const advance = (o: OnlineOrder) => {
+  const refresh = async () => setOrders(await loadOnlineOrders());
+
+  const advance = async (o: OnlineOrder) => {
     const next = nextStatus(o);
     if (!next) return;
-    updateOnlineOrderStatus(o.id, next);
+    await saveOnlineOrderStatus({ data: { id: o.id, status: next } });
     if (o.status === "New" && next === "Accepted" && o.type === "Delivery") {
       pushToDeliveryTrips(o, me?.id);
     }
+    refresh();
   };
 
-  const cancel = (id: string) => updateOnlineOrderStatus(id, "Cancelled");
+  const cancel = async (id: string) => {
+    await saveOnlineOrderStatus({ data: { id, status: "Cancelled" } });
+    refresh();
+  };
 
   return (
     <PageShell
