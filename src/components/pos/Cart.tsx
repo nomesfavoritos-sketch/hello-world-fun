@@ -48,11 +48,27 @@ export function Cart({
 
   useEffect(() => {
     setOrderNo((Math.floor(Date.now() / 1000) % 10000).toString().padStart(4, "0"));
-    const at = localStorage.getItem("bj_active_table");
-    if (at) {
-      setActiveTable(at);
-      setOrderType("Dine-in");
-    }
+    const sync = () => {
+      const at = localStorage.getItem("bj_active_table");
+      if (at) {
+        setActiveTable(at);
+        setOrderType("Dine-in");
+        setToast(`Adding items to Table ${at}`);
+      } else {
+        setActiveTable(null);
+      }
+    };
+    sync();
+    const onCustom = () => sync();
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "bj_active_table") sync();
+    };
+    window.addEventListener("bj:active-table-changed", onCustom);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener("bj:active-table-changed", onCustom);
+      window.removeEventListener("storage", onStorage);
+    };
   }, []);
 
   useEffect(() => {
