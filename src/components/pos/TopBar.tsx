@@ -1,5 +1,24 @@
 import { Search, Bell, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { getCurrentUser, ROLE_LABELS, type AppUser } from "@/lib/users-store";
+
+function greeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "GOOD MORNING";
+  if (h < 17) return "GOOD AFTERNOON";
+  return "GOOD EVENING";
+}
+
+function initials(name: string) {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
 
 export function TopBar({
   query,
@@ -8,6 +27,14 @@ export function TopBar({
   query: string;
   setQuery: (s: string) => void;
 }) {
+  const [me, setMe] = useState<AppUser | null>(null);
+
+  useEffect(() => {
+    setMe(getCurrentUser());
+  }, []);
+
+  const firstName = me?.name?.split(" ")[0] ?? "GUEST";
+
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
       <div>
@@ -15,7 +42,8 @@ export function TopBar({
           Point of Sale
         </p>
         <h1 className="font-display text-3xl sm:text-4xl tracking-wider mt-1">
-          GOOD EVENING, <span className="gradient-text-red">CHEF</span>
+          {greeting()},{" "}
+          <span className="gradient-text-red">{firstName.toUpperCase()}</span>
         </h1>
       </div>
 
@@ -45,17 +73,19 @@ export function TopBar({
           <span className="absolute top-2 right-2 size-2 rounded-full bg-primary pulse-glow" />
         </motion.button>
 
-        <div className="hidden sm:flex items-center gap-3 pl-2 ml-1 border-l border-white/5">
-          <div className="text-right">
-            <p className="text-sm font-medium leading-none">Joseph K.</p>
-            <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">
-              Cashier · Shift 2
-            </p>
+        {me && (
+          <div className="hidden sm:flex items-center gap-3 pl-2 ml-1 border-l border-white/5">
+            <div className="text-right">
+              <p className="text-sm font-medium leading-none">{me.name}</p>
+              <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">
+                {ROLE_LABELS[me.role]}
+              </p>
+            </div>
+            <div className="size-10 rounded-xl bg-gradient-to-br from-primary to-primary/40 grid place-items-center font-semibold">
+              {initials(me.name)}
+            </div>
           </div>
-          <div className="size-10 rounded-xl bg-gradient-to-br from-primary to-primary/40 grid place-items-center font-semibold">
-            JK
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
