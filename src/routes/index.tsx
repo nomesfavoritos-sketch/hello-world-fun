@@ -94,3 +94,75 @@ function POSPage() {
     </div>
   );
 }
+
+function LiveStats() {
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 5000);
+    const off = onOnlineOrdersChange(() => setTick((t) => t + 1));
+    const onStorage = () => setTick((t) => t + 1);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      clearInterval(id);
+      off();
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
+
+  const stats = useMemo(() => {
+    const sales = getSales();
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const todays = sales.filter((s) => s.at >= start.getTime());
+    const revenue = todays.reduce((s, x) => s + x.total, 0);
+    const orders = todays.length;
+    const avg = orders ? revenue / orders : 0;
+    const online = getOnlineOrders();
+    const queue = online.filter((o) =>
+      ["New", "Accepted", "Preparing"].includes(o.status),
+    ).length;
+    return { revenue, orders, avg, queue };
+  }, [tick]);
+
+  const fmt = (n: number) =>
+    n.toLocaleString(undefined, { style: "currency", currency: "USD" });
+
+  const items = [
+    { label: "Today's Revenue", value: fmt(stats.revenue), trend: `${stats.orders} orders`, accent: "gold" as const },
+    { label: "Orders Today", value: String(stats.orders), trend: "live", accent: "red" as const, live: true },
+    { label: "Avg Ticket", value: fmt(stats.avg), trend: stats.orders ? "today" : "—" },
+    { label: "Online Queue", value: String(stats.queue), trend: "open tickets", live: true },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {items.map((s) => (
+        <motion.div
+          key={s.label}
+          whileHover={{ y: -2 }}
+          className="glass-strong rounded-2xl p-4"
+        >
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+              {s.label}
+            </p>
+            {s.live && <span className="size-2 rounded-full bg-primary pulse-glow" />}
+          </div>
+          <p
+            className={`font-mono-num text-2xl font-bold mt-2 ${
+              s.accent === "gold"
+                ? "gradient-text-gold"
+                : s.accent === "red"
+                  ? "gradient-text-red"
+                  : ""
+            }`}
+          >
+            {s.value}
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">{s.trend}</p>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
