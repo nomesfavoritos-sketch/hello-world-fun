@@ -14,7 +14,7 @@ import { getCurrentUser } from "@/lib/users-store";
 
 import appCss from "../styles.css?url";
 
-const PUBLIC_PATHS = new Set(["/login"]);
+const PUBLIC_PATHS = new Set(["/login", "/order"]);
 
 function AuthGate({ children }: { children: React.ReactNode }) {
   const nav = useNavigate();
