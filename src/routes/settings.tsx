@@ -127,6 +127,7 @@ function SettingsPage() {
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card icon={Building2} title="Branch">
+          <LogoUploader value={s.logoDataUrl} onChange={(v) => u("logoDataUrl", v)} />
           <Field label="Restaurant name">
             <input className={inputCls} value={s.shopName} onChange={(e) => u("shopName", e.target.value)} />
           </Field>
