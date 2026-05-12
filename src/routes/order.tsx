@@ -350,12 +350,15 @@ function OnlineOrderPage() {
                   </div>
 
                   <button
-                    disabled={!canSubmit}
+                    disabled={!canSubmit || submitting}
                     onClick={submit}
                     className="h-14 rounded-2xl bg-primary text-primary-foreground font-semibold flex items-center justify-center gap-2 glow-red disabled:opacity-40 disabled:glow-red-none"
                   >
-                    <span className="font-display tracking-widest">PLACE ORDER · {sym} {total.toFixed(2)}</span>
+                    <span className="font-display tracking-widest">
+                      {submitting ? "PLACING ORDER..." : `PLACE ORDER · ${sym} ${total.toFixed(2)}`}
+                    </span>
                   </button>
+                  {orderError && <p className="text-xs text-center text-primary">{orderError}</p>}
                   <p className="text-[10px] text-center text-muted-foreground">
                     Cash on {type === "Delivery" ? "Delivery" : type === "Pickup" ? "Pickup" : "Dine-in"}. We'll call you to confirm.
                   </p>
