@@ -38,6 +38,8 @@ const NAV = [
 export function Sidebar() {
   const [me, setMe] = useState<AppUser | null>(null);
   const nav = useNavigate();
+  const logo = useLogo();
+  const shopName = getSettings().shopName;
 
   useEffect(() => {
     setMe(getCurrentUser());
