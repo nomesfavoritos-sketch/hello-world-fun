@@ -72,14 +72,10 @@ function POSPage() {
         <main className="flex-1 min-w-0 flex flex-col gap-5">
           <TopBar query={query} setQuery={setQuery} />
 
-          {/* Stat strip */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {[
-              { label: "Today's Revenue", value: "$4,892", trend: "+12.4%", accent: "gold" },
-              { label: "Orders", value: "127", trend: "+8 live", accent: "red" },
-              { label: "Avg Ticket", value: "$38.50", trend: "+$2.10" },
-              { label: "Kitchen Queue", value: "6", trend: "~4 min", live: true },
-            ].map((s) => (
+          {/* Stat strip — live data */}
+          <LiveStats />
+          <div className="hidden">
+            {[].map((s: any) => (
               <motion.div
                 key={s.label}
                 whileHover={{ y: -2 }}
