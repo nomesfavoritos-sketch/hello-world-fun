@@ -3,6 +3,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Clock, ChefHat, CheckCircle2, Flame } from "lucide-react";
 import { PageShell } from "@/components/pos/PageShell";
+import { recordKitchenAction } from "@/lib/kitchen-store";
 
 export const Route = createFileRoute("/kitchen")({
   head: () => ({ meta: [{ title: "Kitchen Display · BJ Pizza" }] }),
@@ -35,16 +36,21 @@ const COLUMNS: { id: Status; label: string; icon: typeof Clock; accent: string }
 function KitchenPage() {
   const [tickets, setTickets] = useState<Ticket[]>(SEED);
 
-  const advance = (id: string) =>
+  const advance = (id: string) => {
     setTickets((p) =>
-      p.map((t) =>
-        t.id === id
-          ? { ...t, status: t.status === "queued" ? "cooking" : t.status === "cooking" ? "ready" : "ready" }
-          : t,
-      ),
+      p.map((t) => {
+        if (t.id !== id) return t;
+        const next: Status = t.status === "queued" ? "cooking" : "ready";
+        recordKitchenAction(id, next === "cooking" ? "start" : "ready");
+        return { ...t, status: next };
+      }),
     );
+  };
 
-  const clear = (id: string) => setTickets((p) => p.filter((t) => t.id !== id));
+  const clear = (id: string) => {
+    recordKitchenAction(id, "bump");
+    setTickets((p) => p.filter((t) => t.id !== id));
+  };
 
   return (
     <PageShell
