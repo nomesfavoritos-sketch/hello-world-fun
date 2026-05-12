@@ -15,6 +15,7 @@ export type ShopSettings = {
   printerOn: boolean;
   kdsOn: boolean;
   notifOn: boolean;
+  logoDataUrl: string;
 };
 
 export const DEFAULT_SETTINGS: ShopSettings = {
@@ -34,6 +35,7 @@ export const DEFAULT_SETTINGS: ShopSettings = {
   printerOn: true,
   kdsOn: true,
   notifOn: true,
+  logoDataUrl: "",
 };
 
 const KEY = "bj_settings";
