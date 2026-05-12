@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { PageShell } from "@/components/pos/PageShell";
 import { printThermalReceipt } from "@/lib/print-receipt";
 import { recordSale } from "@/lib/sales-store";
+import { useCurrency } from "@/lib/settings-store";
 import type { OpenTable } from "@/components/pos/Cart";
 
 export const Route = createFileRoute("/tables")({
@@ -29,6 +30,7 @@ function saveTables(t: OpenTable[]) {
 
 function TablesPage() {
   const navigate = useNavigate();
+  const sym = useCurrency();
   const [tables, setTables] = useState<OpenTable[]>([]);
   const [now, setNow] = useState(Date.now());
 
