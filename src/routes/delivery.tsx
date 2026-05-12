@@ -4,6 +4,7 @@ import { Bike, MapPin, Phone, Star, Plus, X, ChevronRight, CheckCircle2, Clock, 
 import { PageShell } from "@/components/pos/PageShell";
 import { useEffect, useMemo, useState } from "react";
 import { getCurrentUser, getUsers, type AppUser } from "@/lib/users-store";
+import { useCurrency } from "@/lib/settings-store";
 
 export const Route = createFileRoute("/delivery")({
   head: () => ({ meta: [{ title: "Delivery · BJ Pizza" }] }),
@@ -61,6 +62,7 @@ function buildRiders(trips: Trip[], statsMap: Record<string, RiderStats>): Rider
 }
 
 function DeliveryPage() {
+  const sym = useCurrency();
   const [me, setMe] = useState<AppUser | null>(null);
   const [trips, setTrips] = useState<Trip[]>(() => loadLS("bj_trips", INITIAL_TRIPS));
   const [stats, setStats] = useState<Record<string, RiderStats>>(() => loadLS("bj_rider_stats", {}));
@@ -267,7 +269,7 @@ function DeliveryPage() {
                         <a href={`tel:${t.phone}`} className="flex items-center gap-1 hover:text-primary">
                           <Phone className="size-3" /> {t.phone}
                         </a>
-                        <span className="font-mono-num text-gold">${t.amount.toFixed(2)}</span>
+                        <span className="font-mono-num text-gold">{sym} {t.amount.toFixed(2)}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         {!isRider && (
@@ -332,7 +334,7 @@ function DeliveryPage() {
                       <CheckCircle2 className="size-3.5 text-emerald-400" />
                       <span className="font-mono-num">#{t.id}</span> · {t.customer}
                     </span>
-                    <span className="text-gold font-mono-num">${t.amount.toFixed(2)}</span>
+                    <span className="text-gold font-mono-num">{sym} {t.amount.toFixed(2)}</span>
                   </div>
                 ))}
               </div>
