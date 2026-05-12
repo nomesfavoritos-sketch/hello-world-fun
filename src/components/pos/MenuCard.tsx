@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Plus, Flame } from "lucide-react";
 import type { MenuItem } from "@/lib/menu-data";
+import { useCurrency } from "@/lib/settings-store";
 
 const TAG_STYLES: Record<string, string> = {
   Bestseller: "bg-gold/15 text-gold border-gold/30",
@@ -10,6 +11,7 @@ const TAG_STYLES: Record<string, string> = {
 };
 
 export function MenuCard({ item, onAdd }: { item: MenuItem; onAdd: () => void }) {
+  const sym = useCurrency();
   return (
     <div
       role="button"
@@ -63,7 +65,7 @@ export function MenuCard({ item, onAdd }: { item: MenuItem; onAdd: () => void })
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-semibold text-sm leading-tight">{item.name}</h3>
           <p className="font-mono-num text-sm font-bold text-gold shrink-0">
-            ${item.price.toFixed(2)}
+            {sym} {item.price.toFixed(2)}
           </p>
         </div>
         <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{item.desc}</p>
