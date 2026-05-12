@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Sidebar } from "@/components/pos/Sidebar";
 import { TopBar } from "@/components/pos/TopBar";
@@ -7,6 +7,8 @@ import { CategoryRail } from "@/components/pos/CategoryRail";
 import { MenuCard } from "@/components/pos/MenuCard";
 import { Cart, type CartLine } from "@/components/pos/Cart";
 import { MENU, type Category, type MenuItem } from "@/lib/menu-data";
+import { getSales } from "@/lib/sales-store";
+import { getOnlineOrders, onOnlineOrdersChange } from "@/lib/online-orders-store";
 
 export const Route = createFileRoute("/")({
   head: () => ({
