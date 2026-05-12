@@ -3,6 +3,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Flame, KeyRound, User as UserIcon } from "lucide-react";
 import { login, ROLE_HOME } from "@/lib/users-store";
+import { useLogo, getSettings } from "@/lib/settings-store";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Sign in · BJ Pizza" }] }),
