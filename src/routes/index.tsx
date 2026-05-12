@@ -74,36 +74,6 @@ function POSPage() {
 
           {/* Stat strip — live data */}
           <LiveStats />
-          <div className="hidden">
-            {[].map((s: any) => (
-              <motion.div
-                key={s.label}
-                whileHover={{ y: -2 }}
-                className="glass-strong rounded-2xl p-4"
-              >
-                <div className="flex items-center justify-between">
-                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                    {s.label}
-                  </p>
-                  {s.live && (
-                    <span className="size-2 rounded-full bg-primary pulse-glow" />
-                  )}
-                </div>
-                <p
-                  className={`font-mono-num text-2xl font-bold mt-2 ${
-                    s.accent === "gold"
-                      ? "gradient-text-gold"
-                      : s.accent === "red"
-                        ? "gradient-text-red"
-                        : ""
-                  }`}
-                >
-                  {s.value}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">{s.trend}</p>
-              </motion.div>
-            ))}
-          </div>
 
           <CategoryRail active={cat} onChange={setCat} />
 
