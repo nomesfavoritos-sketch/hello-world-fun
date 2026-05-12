@@ -1,4 +1,5 @@
 import type { CartLine } from "@/components/pos/Cart";
+import { getCurrentUser } from "@/lib/users-store";
 
 export type SaleRecord = {
   id: string;
@@ -9,6 +10,9 @@ export type SaleRecord = {
   subtotal: number;
   tax: number;
   total: number;
+  userId?: string;
+  userName?: string;
+  userRole?: string;
 };
 
 const KEY = "bj_sales";
@@ -30,8 +34,12 @@ export function recordSale(args: {
   subtotal: number;
   tax: number;
   total: number;
+  userId?: string;
+  userName?: string;
+  userRole?: string;
 }) {
   if (typeof window === "undefined") return;
+  const me = getCurrentUser();
   const list = getSales();
   list.unshift({
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
@@ -48,6 +56,9 @@ export function recordSale(args: {
     subtotal: args.subtotal,
     tax: args.tax,
     total: args.total,
+    userId: args.userId ?? me?.id,
+    userName: args.userName ?? me?.name,
+    userRole: args.userRole ?? me?.role,
   });
   localStorage.setItem(KEY, JSON.stringify(list.slice(0, MAX)));
 }
