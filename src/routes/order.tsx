@@ -1,10 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Plus, Minus, ShoppingBag, Trash2, X, CheckCircle2, Bike, Store, Utensils, Flame } from "lucide-react";
 import { MENU, CATEGORIES, type Category, type MenuItem } from "@/lib/menu-data";
 import { getSettings, useCurrency, useLogo } from "@/lib/settings-store";
-import { placeOnlineOrder, type OnlineOrderType } from "@/lib/online-orders-store";
+import { type OnlineOrderType } from "@/lib/online-orders-store";
+import { createOnlineOrder } from "@/lib/online-orders.functions";
 
 export const Route = createFileRoute("/order")({
   head: () => ({
@@ -22,12 +24,15 @@ function OnlineOrderPage() {
   const sym = useCurrency();
   const logo = useLogo();
   const settings = getSettings();
+  const submitOnlineOrder = useServerFn(createOnlineOrder);
 
   const [cat, setCat] = useState<Category>("All");
   const [query, setQuery] = useState("");
   const [lines, setLines] = useState<Line[]>([]);
   const [showCheckout, setShowCheckout] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
 
   const [type, setType] = useState<OnlineOrderType>("Delivery");
   const [name, setName] = useState("");
@@ -68,23 +73,33 @@ function OnlineOrderPage() {
     phone.trim().length >= 6 &&
     (type !== "Delivery" || address.trim().length >= 5);
 
-  const submit = () => {
-    if (!canSubmit) return;
-    const order = placeOnlineOrder({
-      customer: name.trim(),
-      phone: phone.trim(),
-      address: address.trim() || undefined,
-      type,
-      notes: notes.trim() || undefined,
-      lines,
-      vatPct: settings.vatPct,
-    });
-    setSuccess(order.id);
-    setLines([]);
-    setShowCheckout(false);
-    setName("");
-    setAddress("");
-    setNotes("");
+  const submit = async () => {
+    if (!canSubmit || submitting) return;
+    setSubmitting(true);
+    setOrderError(null);
+    try {
+      const order = await submitOnlineOrder({
+        data: {
+          customer: name.trim(),
+          phone: phone.trim(),
+          address: address.trim() || undefined,
+          type,
+          notes: notes.trim() || undefined,
+          lines: lines.map((l) => ({ id: l.item.id, name: l.item.name, price: l.item.price, qty: l.qty })),
+          vatPct: settings.vatPct,
+        },
+      });
+      setSuccess(order.id);
+      setLines([]);
+      setShowCheckout(false);
+      setName("");
+      setAddress("");
+      setNotes("");
+    } catch {
+      setOrderError("Order submit nahi hua. Dobara try karen.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -335,12 +350,15 @@ function OnlineOrderPage() {
                   </div>
 
                   <button
-                    disabled={!canSubmit}
+                    disabled={!canSubmit || submitting}
                     onClick={submit}
                     className="h-14 rounded-2xl bg-primary text-primary-foreground font-semibold flex items-center justify-center gap-2 glow-red disabled:opacity-40 disabled:glow-red-none"
                   >
-                    <span className="font-display tracking-widest">PLACE ORDER · {sym} {total.toFixed(2)}</span>
+                    <span className="font-display tracking-widest">
+                      {submitting ? "PLACING ORDER..." : `PLACE ORDER · ${sym} ${total.toFixed(2)}`}
+                    </span>
                   </button>
+                  {orderError && <p className="text-xs text-center text-primary">{orderError}</p>}
                   <p className="text-[10px] text-center text-muted-foreground">
                     Cash on {type === "Delivery" ? "Delivery" : type === "Pickup" ? "Pickup" : "Dine-in"}. We'll call you to confirm.
                   </p>
