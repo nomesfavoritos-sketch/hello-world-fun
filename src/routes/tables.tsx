@@ -79,6 +79,9 @@ function TablesPage() {
 
   const addMore = (tableNo: string) => {
     localStorage.setItem("bj_active_table", tableNo);
+    try {
+      window.dispatchEvent(new CustomEvent("bj:active-table-changed", { detail: tableNo }));
+    } catch {}
     navigate({ to: "/" });
   };
 
