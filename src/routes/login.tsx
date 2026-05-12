@@ -15,6 +15,8 @@ function LoginPage() {
   const [username, setUsername] = useState("");
   const [pin, setPin] = useState("");
   const [err, setErr] = useState<string | null>(null);
+  const logo = useLogo();
+  const shopName = getSettings().shopName;
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
