@@ -5,6 +5,7 @@ import { Search, Plus, Pencil, Eye, EyeOff, Sparkles, Trash2, X, Save } from "lu
 import { Sidebar } from "@/components/pos/Sidebar";
 import { CategoryRail } from "@/components/pos/CategoryRail";
 import { CATEGORIES, MENU, type Category, type MenuItem } from "@/lib/menu-data";
+import { useCurrency } from "@/lib/settings-store";
 
 const CATEGORY_OPTIONS = CATEGORIES.map((category) => category.id).filter(
   (category): category is MenuItem["category"] => category !== "All",
@@ -207,6 +208,7 @@ function MenuRow({
   onEdit: () => void;
   onDelete: () => void;
 }) {
+  const sym = useCurrency();
   return (
     <motion.div
       layout
@@ -222,7 +224,7 @@ function MenuRow({
             <p className="font-semibold truncate">{item.name}</p>
             <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{item.desc}</p>
           </div>
-          <p className="font-mono-num font-bold text-gold shrink-0">${item.price.toFixed(2)}</p>
+          <p className="font-mono-num font-bold text-gold shrink-0">{sym} {item.price.toFixed(2)}</p>
         </div>
         <div className="mt-auto flex items-center gap-2 pt-2">
           <span className="text-[10px] uppercase tracking-widest px-2 py-1 rounded-md bg-white/5 text-muted-foreground">
