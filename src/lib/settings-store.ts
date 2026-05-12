@@ -49,6 +49,51 @@ export function getSettings(): ShopSettings {
   }
 }
 
+export const CURRENCY_SYMBOLS: Record<string, string> = {
+  PKR: "Rs",
+  USD: "$",
+  AED: "د.إ",
+  EUR: "€",
+  GBP: "£",
+  SAR: "﷼",
+  INR: "₹",
+};
+
+export function symbolFor(currency: string): string {
+  return CURRENCY_SYMBOLS[currency] || currency;
+}
+
 export function saveSettings(s: ShopSettings) {
-  localStorage.setItem(KEY, JSON.stringify(s));
+  // keep symbol aligned with selected currency
+  const next = { ...s, currencySymbol: symbolFor(s.currency) };
+  localStorage.setItem(KEY, JSON.stringify(next));
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("bj:settings-changed"));
+  }
+}
+
+export function formatMoney(n: number, sym?: string): string {
+  const symbol = sym ?? getSettings().currencySymbol;
+  const v = (Number.isFinite(n) ? n : 0).toFixed(2);
+  return `${symbol} ${v}`;
+}
+
+import { useEffect, useState } from "react";
+
+export function useCurrency(): string {
+  const [sym, setSym] = useState<string>(() => {
+    if (typeof window === "undefined") return DEFAULT_SETTINGS.currencySymbol;
+    return getSettings().currencySymbol;
+  });
+  useEffect(() => {
+    const sync = () => setSym(getSettings().currencySymbol);
+    sync();
+    window.addEventListener("bj:settings-changed", sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener("bj:settings-changed", sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, []);
+  return sym;
 }
