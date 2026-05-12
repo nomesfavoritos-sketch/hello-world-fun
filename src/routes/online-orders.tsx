@@ -234,7 +234,10 @@ function OnlineOrdersPage() {
                     )}
                     {(o.status === "Completed" || o.status === "Cancelled") && (
                       <button
-                        onClick={() => deleteOnlineOrder(o.id)}
+                        onClick={async () => {
+                          await deleteOnlineOrder({ data: { id: o.id } });
+                          refresh();
+                        }}
                         className="text-xs px-2.5 py-1.5 rounded-md hover:bg-white/5 text-muted-foreground hover:text-foreground flex items-center gap-1"
                         title="Remove from list"
                       >
