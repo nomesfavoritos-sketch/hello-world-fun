@@ -23,10 +23,10 @@ export const ROLE_LABELS: Record<Role, string> = {
 };
 
 export const ROLE_NAV: Record<Role, string[]> = {
-  admin: ["/dashboard", "/", "/tables", "/menu", "/kitchen", "/delivery", "/reports", "/users", "/settings"],
-  manager: ["/dashboard", "/", "/tables", "/menu", "/kitchen", "/delivery", "/reports", "/settings"],
-  pos: ["/dashboard", "/", "/tables", "/menu"],
-  kitchen: ["/dashboard", "/kitchen"],
+  admin: ["/dashboard", "/", "/tables", "/menu", "/kitchen", "/delivery", "/online-orders", "/reports", "/users", "/settings"],
+  manager: ["/dashboard", "/", "/tables", "/menu", "/kitchen", "/delivery", "/online-orders", "/reports", "/settings"],
+  pos: ["/dashboard", "/", "/tables", "/menu", "/online-orders"],
+  kitchen: ["/dashboard", "/kitchen", "/online-orders"],
   rider: ["/dashboard", "/delivery"],
 };
 
