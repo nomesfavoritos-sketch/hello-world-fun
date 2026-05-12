@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { UserPlus, Trash2, Shield, Check, X, Power } from "lucide-react";
+import { UserPlus, Trash2, Shield, Check, X, Power, Pencil } from "lucide-react";
 import { PageShell } from "@/components/pos/PageShell";
 import {
   addUser,
@@ -29,18 +29,16 @@ const ROLE_COLORS: Record<Role, string> = {
   rider: "bg-sky-500/15 text-sky-400",
 };
 
+type Mode = null | { kind: "new" } | { kind: "edit"; user: AppUser };
+
+const EMPTY = { name: "", username: "", pin: "", role: "pos" as Role, phone: "" };
+
 function UsersPage() {
   const nav = useNavigate();
   const [users, setUsers] = useState<AppUser[]>([]);
-  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<Mode>(null);
   const [toast, setToast] = useState<string | null>(null);
-  const [form, setForm] = useState({
-    name: "",
-    username: "",
-    pin: "",
-    role: "pos" as Role,
-    phone: "",
-  });
+  const [form, setForm] = useState(EMPTY);
 
   useEffect(() => {
     const me = getCurrentUser();
@@ -63,17 +61,57 @@ function UsersPage() {
 
   const refresh = () => setUsers(getUsers());
 
+  const openNew = () => {
+    setForm(EMPTY);
+    setMode({ kind: "new" });
+  };
+
+  const openEdit = (u: AppUser) => {
+    setForm({
+      name: u.name,
+      username: u.username,
+      pin: u.pin,
+      role: u.role,
+      phone: u.phone ?? "",
+    });
+    setMode({ kind: "edit", user: u });
+  };
+
+  const close = () => setMode(null);
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.username.trim() || form.pin.length < 4) {
       return setToast("Fill all fields. PIN min 4 digits.");
     }
     try {
-      addUser({ ...form, active: true });
-      setForm({ name: "", username: "", pin: "", role: "pos", phone: "" });
-      setOpen(false);
-      refresh();
-      setToast("User created");
+      if (mode?.kind === "edit") {
+        const u = mode.user;
+        // Keep admin owner's role locked to admin
+        const role = u.username === "admin" ? "admin" : form.role;
+        // Username uniqueness check (case-insensitive)
+        const taken = getUsers().some(
+          (x) =>
+            x.id !== u.id &&
+            x.username.toLowerCase() === form.username.trim().toLowerCase(),
+        );
+        if (taken) return setToast("Username already exists");
+        updateUser(u.id, {
+          name: form.name.trim(),
+          username: form.username.trim(),
+          pin: form.pin,
+          phone: form.phone.trim(),
+          role,
+        });
+        refresh();
+        close();
+        setToast("User updated");
+      } else {
+        addUser({ ...form, active: true });
+        refresh();
+        close();
+        setToast("User created");
+      }
     } catch (e) {
       setToast((e as Error).message);
     }
@@ -97,6 +135,9 @@ function UsersPage() {
     n: users.filter((u) => u.role === r).length,
   }));
 
+  const isEdit = mode?.kind === "edit";
+  const isOwner = isEdit && mode.user.username === "admin";
+
   return (
     <PageShell
       eyebrow="Access Control"
@@ -104,7 +145,7 @@ function UsersPage() {
       subtitle="Add staff, assign roles and control module access."
       actions={
         <button
-          onClick={() => setOpen(true)}
+          onClick={openNew}
           className="bg-primary text-primary-foreground rounded-xl px-4 py-2 text-xs uppercase tracking-widest hover:opacity-90 flex items-center gap-2"
         >
           <UserPlus className="size-3.5" /> Add user
@@ -152,6 +193,13 @@ function UsersPage() {
                 {ROLE_LABELS[u.role]}
               </span>
               <button
+                onClick={() => openEdit(u)}
+                className="size-8 grid place-items-center rounded-lg hover:bg-white/5 text-muted-foreground hover:text-foreground"
+                title="Edit"
+              >
+                <Pencil className="size-4" />
+              </button>
+              <button
                 onClick={() => toggle(u)}
                 className="size-8 grid place-items-center rounded-lg hover:bg-white/5 text-muted-foreground"
                 title={u.active ? "Disable" : "Enable"}
@@ -171,13 +219,13 @@ function UsersPage() {
       </div>
 
       <AnimatePresence>
-        {open && (
+        {mode && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/60 grid place-items-center z-50 p-4"
-            onClick={() => setOpen(false)}
+            onClick={close}
           >
             <motion.form
               initial={{ scale: 0.95, opacity: 0 }}
@@ -188,24 +236,36 @@ function UsersPage() {
               className="glass-strong rounded-2xl p-6 w-full max-w-md"
             >
               <div className="flex items-center justify-between mb-5">
-                <p className="font-display text-xl tracking-wider">NEW USER</p>
-                <button type="button" onClick={() => setOpen(false)}>
+                <p className="font-display text-xl tracking-wider">
+                  {isEdit ? "EDIT USER" : "NEW USER"}
+                </p>
+                <button type="button" onClick={close}>
                   <X className="size-4 text-muted-foreground" />
                 </button>
               </div>
               <div className="flex flex-col gap-3">
+                <label className="text-[10px] uppercase tracking-widest text-muted-foreground -mb-2">
+                  Full name
+                </label>
                 <input
                   className="glass rounded-xl px-3 py-2 text-sm bg-transparent border border-white/5"
                   placeholder="Full name"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                 />
+                <label className="text-[10px] uppercase tracking-widest text-muted-foreground -mb-2">
+                  Username
+                </label>
                 <input
-                  className="glass rounded-xl px-3 py-2 text-sm bg-transparent border border-white/5"
+                  className="glass rounded-xl px-3 py-2 text-sm bg-transparent border border-white/5 disabled:opacity-50"
                   placeholder="Username"
                   value={form.username}
+                  disabled={isOwner}
                   onChange={(e) => setForm({ ...form, username: e.target.value })}
                 />
+                <label className="text-[10px] uppercase tracking-widest text-muted-foreground -mb-2">
+                  PIN
+                </label>
                 <input
                   className="glass rounded-xl px-3 py-2 text-sm bg-transparent border border-white/5 font-mono-num"
                   placeholder="PIN (min 4 digits)"
@@ -213,29 +273,41 @@ function UsersPage() {
                   value={form.pin}
                   onChange={(e) => setForm({ ...form, pin: e.target.value })}
                 />
+                <label className="text-[10px] uppercase tracking-widest text-muted-foreground -mb-2">
+                  Phone
+                </label>
                 <input
                   className="glass rounded-xl px-3 py-2 text-sm bg-transparent border border-white/5"
                   placeholder="Phone (optional)"
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 />
+                <label className="text-[10px] uppercase tracking-widest text-muted-foreground -mb-2">
+                  Role
+                </label>
                 <select
-                  className="glass rounded-xl px-3 py-2 text-sm bg-transparent border border-white/5"
+                  className="glass rounded-xl px-3 py-2 text-sm bg-transparent border border-white/5 disabled:opacity-50"
                   value={form.role}
+                  disabled={isOwner}
                   onChange={(e) => setForm({ ...form, role: e.target.value as Role })}
                 >
                   {ROLES.map((r) => (
-                    <option key={r} value={r}>
+                    <option key={r} value={r} className="bg-background">
                       {ROLE_LABELS[r]}
                     </option>
                   ))}
                 </select>
+                {isOwner && (
+                  <p className="text-[10px] text-muted-foreground">
+                    Owner admin's username and role are locked.
+                  </p>
+                )}
               </div>
               <button
                 type="submit"
                 className="w-full mt-5 bg-primary text-primary-foreground rounded-xl py-3 text-sm uppercase tracking-widest"
               >
-                Create user
+                {isEdit ? "Save changes" : "Create user"}
               </button>
             </motion.form>
           </motion.div>
