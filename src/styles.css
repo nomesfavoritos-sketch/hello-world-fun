@@ -91,7 +91,7 @@
     background-image:
       radial-gradient(ellipse 80% 50% at 20% 0%, color-mix(in oklab, var(--primary) 10%, transparent), transparent 60%),
       radial-gradient(ellipse 60% 40% at 100% 100%, color-mix(in oklab, var(--gold) 6%, transparent), transparent 60%);
-    background-attachment: fixed;
+    background-repeat: no-repeat;
   }
   .font-display { font-family: var(--font-display); letter-spacing: 0.02em; }
   .font-mono-num { font-family: var(--font-mono); font-feature-settings: "tnum"; }
