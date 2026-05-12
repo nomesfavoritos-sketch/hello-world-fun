@@ -92,6 +92,7 @@ export function printThermalReceipt(opts: ReceiptOptions) {
 </style>
 </head>
 <body>
+  ${s.logoDataUrl ? `<div class="center"><img src="${s.logoDataUrl}" alt="logo" style="max-width:60%;max-height:80px;object-fit:contain;margin:0 auto 4px;" /></div>` : ""}
   <div class="center xl bold">${escapeHtml(shopName)}</div>
   <div class="center meta">${escapeHtml(shopTagline)}</div>
   <div class="center meta">${escapeHtml(shopAddress)}</div>

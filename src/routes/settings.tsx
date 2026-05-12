@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Building2, Receipt, Printer, Users, Bell, Globe, Check, Database, Trash2 } from "lucide-react";
+import { Building2, Receipt, Printer, Users, Bell, Globe, Check, Database, Trash2, Image as ImageIcon, Upload, X } from "lucide-react";
 import { PageShell } from "@/components/pos/PageShell";
 import { DEFAULT_SETTINGS, getSettings, saveSettings, type ShopSettings } from "@/lib/settings-store";
 import { clearSales, getSales } from "@/lib/sales-store";
@@ -65,6 +65,60 @@ const STAFF = [
   { name: "Imran Saeed", role: "Kitchen Lead", email: "imran@bjpizza.com" },
 ];
 
+function LogoUploader({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const ref = useRef<HTMLInputElement>(null);
+  const onPick = (file?: File | null) => {
+    if (!file) return;
+    if (file.size > 1024 * 1024) {
+      alert("Logo too large. Please pick an image under 1 MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => onChange(String(reader.result || ""));
+    reader.readAsDataURL(file);
+  };
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Logo</span>
+      <div className="flex items-center gap-3 glass rounded-xl p-3">
+        <div className="size-16 rounded-xl bg-white/5 grid place-items-center overflow-hidden shrink-0">
+          {value ? (
+            <img src={value} alt="Logo" className="size-full object-contain" />
+          ) : (
+            <ImageIcon className="size-6 text-muted-foreground" />
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm">Brand logo</p>
+          <p className="text-[10px] text-muted-foreground">PNG/JPG/SVG · shown in sidebar, login & receipts</p>
+        </div>
+        <input
+          ref={ref}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => onPick(e.target.files?.[0])}
+        />
+        <button
+          onClick={() => ref.current?.click()}
+          className="text-xs glass rounded-lg px-3 py-2 hover:bg-white/5 flex items-center gap-1.5"
+        >
+          <Upload className="size-3.5" /> Upload
+        </button>
+        {value && (
+          <button
+            onClick={() => onChange("")}
+            className="text-xs text-muted-foreground hover:text-primary p-2"
+            title="Remove logo"
+          >
+            <X className="size-4" />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function SettingsPage() {
   const [s, setS] = useState<ShopSettings>(DEFAULT_SETTINGS);
   const [toast, setToast] = useState<string | null>(null);
@@ -127,6 +181,7 @@ function SettingsPage() {
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card icon={Building2} title="Branch">
+          <LogoUploader value={s.logoDataUrl} onChange={(v) => u("logoDataUrl", v)} />
           <Field label="Restaurant name">
             <input className={inputCls} value={s.shopName} onChange={(e) => u("shopName", e.target.value)} />
           </Field>

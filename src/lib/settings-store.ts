@@ -15,6 +15,7 @@ export type ShopSettings = {
   printerOn: boolean;
   kdsOn: boolean;
   notifOn: boolean;
+  logoDataUrl: string;
 };
 
 export const DEFAULT_SETTINGS: ShopSettings = {
@@ -34,6 +35,7 @@ export const DEFAULT_SETTINGS: ShopSettings = {
   printerOn: true,
   kdsOn: true,
   notifOn: true,
+  logoDataUrl: "",
 };
 
 const KEY = "bj_settings";
@@ -96,4 +98,22 @@ export function useCurrency(): string {
     };
   }, []);
   return sym;
+}
+
+export function useLogo(): string {
+  const [logo, setLogo] = useState<string>(() => {
+    if (typeof window === "undefined") return "";
+    return getSettings().logoDataUrl || "";
+  });
+  useEffect(() => {
+    const sync = () => setLogo(getSettings().logoDataUrl || "");
+    sync();
+    window.addEventListener("bj:settings-changed", sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener("bj:settings-changed", sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, []);
+  return logo;
 }

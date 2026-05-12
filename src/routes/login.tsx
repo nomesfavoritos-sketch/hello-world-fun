@@ -3,6 +3,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Flame, KeyRound, User as UserIcon } from "lucide-react";
 import { login, ROLE_HOME } from "@/lib/users-store";
+import { useLogo, getSettings } from "@/lib/settings-store";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Sign in · BJ Pizza" }] }),
@@ -14,6 +15,8 @@ function LoginPage() {
   const [username, setUsername] = useState("");
   const [pin, setPin] = useState("");
   const [err, setErr] = useState<string | null>(null);
+  const logo = useLogo();
+  const shopName = getSettings().shopName;
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,11 +35,15 @@ function LoginPage() {
         className="glass-strong rounded-3xl p-8 w-full max-w-sm"
       >
         <div className="flex items-center gap-3 mb-6">
-          <div className="size-12 rounded-2xl bg-primary grid place-items-center glow-red">
-            <Flame className="size-6 text-primary-foreground" />
+          <div className="size-12 rounded-2xl bg-primary grid place-items-center glow-red overflow-hidden">
+            {logo ? (
+              <img src={logo} alt={shopName} className="size-full object-contain" />
+            ) : (
+              <Flame className="size-6 text-primary-foreground" />
+            )}
           </div>
           <div>
-            <p className="font-display text-2xl tracking-wider">BJ PIZZA</p>
+            <p className="font-display text-2xl tracking-wider">{shopName}</p>
             <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
               Restaurant OS · Sign in
             </p>
