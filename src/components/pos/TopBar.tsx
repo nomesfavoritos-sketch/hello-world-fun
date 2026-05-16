@@ -44,7 +44,7 @@ export function TopBar({
           Point of Sale
         </p>
         <h1 className="font-display text-3xl sm:text-4xl tracking-wider mt-1">
-          {greeting()},{" "}
+          {greet},{" "}
           <span className="gradient-text-red">{firstName.toUpperCase()}</span>
         </h1>
       </div>
