@@ -28,9 +28,11 @@ export function TopBar({
   setQuery: (s: string) => void;
 }) {
   const [me, setMe] = useState<AppUser | null>(null);
+  const [greet, setGreet] = useState("WELCOME");
 
   useEffect(() => {
     setMe(getCurrentUser());
+    setGreet(greeting());
   }, []);
 
   const firstName = me?.name?.split(" ")[0] ?? "GUEST";
