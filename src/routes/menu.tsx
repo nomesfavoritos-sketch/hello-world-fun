@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import { Search, Plus, Pencil, Eye, EyeOff, Sparkles, Trash2, X, Save } from "lucide-react";
 import { Sidebar } from "@/components/pos/Sidebar";
 import { CategoryRail } from "@/components/pos/CategoryRail";
@@ -137,15 +136,13 @@ function MenuPage() {
                 {menuItems.length} items · {new Set(menuItems.map((m) => m.category)).size} categories
               </p>
             </div>
-            <motion.button
+            <button
               onClick={openCreate}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="h-12 px-5 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center gap-2 glow-red"
+              className="h-12 px-5 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center gap-2 glow-red active:scale-[0.98]"
             >
               <Plus className="size-4" />
               <span className="font-display tracking-widest">NEW ITEM</span>
-            </motion.button>
+            </button>
           </div>
 
           {/* Search */}
@@ -210,14 +207,10 @@ function MenuRow({
 }) {
   const sym = useCurrency();
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -2 }}
+    <div
       className={`glass-strong rounded-2xl p-3 flex gap-3 transition-opacity ${hidden ? "opacity-50" : ""}`}
     >
-      <img src={item.image} alt={item.name} className="size-24 rounded-xl object-cover shrink-0" />
+      <img src={item.image} alt={item.name} loading="lazy" decoding="async" className="size-24 rounded-xl object-cover shrink-0" />
       <div className="flex-1 min-w-0 flex flex-col">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
@@ -260,7 +253,7 @@ function MenuRow({
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -281,9 +274,7 @@ function MenuEditor({
 
   return (
     <div className="fixed inset-0 z-50 bg-background/90 grid place-items-center p-4">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: 16 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
+      <div
         className="glass-strong rounded-2xl w-full max-w-2xl overflow-hidden"
       >
         <div className="p-5 border-b border-border/60 flex items-center justify-between gap-3">
@@ -409,7 +400,7 @@ function MenuEditor({
             Save item
           </button>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
