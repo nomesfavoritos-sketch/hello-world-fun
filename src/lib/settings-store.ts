@@ -83,10 +83,8 @@ export function formatMoney(n: number, sym?: string): string {
 import { useEffect, useState } from "react";
 
 export function useCurrency(): string {
-  const [sym, setSym] = useState<string>(() => {
-    if (typeof window === "undefined") return DEFAULT_SETTINGS.currencySymbol;
-    return getSettings().currencySymbol;
-  });
+  // Start with SSR-safe default to avoid hydration mismatch, then hydrate from localStorage.
+  const [sym, setSym] = useState<string>(DEFAULT_SETTINGS.currencySymbol);
   useEffect(() => {
     const sync = () => setSym(getSettings().currencySymbol);
     sync();
@@ -101,10 +99,7 @@ export function useCurrency(): string {
 }
 
 export function useLogo(): string {
-  const [logo, setLogo] = useState<string>(() => {
-    if (typeof window === "undefined") return "";
-    return getSettings().logoDataUrl || "";
-  });
+  const [logo, setLogo] = useState<string>("");
   useEffect(() => {
     const sync = () => setLogo(getSettings().logoDataUrl || "");
     sync();
@@ -116,4 +111,19 @@ export function useLogo(): string {
     };
   }, []);
   return logo;
+}
+
+export function useShopName(): string {
+  const [name, setName] = useState<string>(DEFAULT_SETTINGS.shopName);
+  useEffect(() => {
+    const sync = () => setName(getSettings().shopName);
+    sync();
+    window.addEventListener("bj:settings-changed", sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener("bj:settings-changed", sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, []);
+  return name;
 }
