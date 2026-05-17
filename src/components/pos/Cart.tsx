@@ -1,4 +1,3 @@
-import { AnimatePresence, motion } from "framer-motion";
 import { Minus, Plus, Trash2, ShoppingBag, Sparkles, CreditCard, Printer, Utensils, X } from "lucide-react";
 import { printThermalReceipt } from "@/lib/print-receipt";
 import { recordSale } from "@/lib/sales-store";
