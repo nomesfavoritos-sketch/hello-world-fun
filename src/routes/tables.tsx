@@ -1,5 +1,4 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { AnimatePresence, motion } from "framer-motion";
 import { Utensils, Printer, X, Clock, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PageShell } from "@/components/pos/PageShell";
@@ -109,16 +108,11 @@ function TablesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          <AnimatePresence mode="popLayout">
-            {tables.map((t) => {
+          {tables.map((t) => {
               const mins = Math.floor((now - t.openedAt) / 60000);
               return (
-                <motion.div
+                <div
                   key={t.tableNo}
-                  layout
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
                   className="glass-strong rounded-2xl p-5 flex flex-col"
                 >
                   <div className="flex items-start justify-between">
@@ -191,10 +185,9 @@ function TablesPage() {
                       <span className="font-display tracking-widest text-sm">PRINT & CLOSE</span>
                     </button>
                   </div>
-                </motion.div>
+                </div>
               );
             })}
-          </AnimatePresence>
         </div>
       )}
     </PageShell>
