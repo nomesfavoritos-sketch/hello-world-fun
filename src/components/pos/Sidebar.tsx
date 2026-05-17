@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
@@ -150,11 +149,7 @@ export function Sidebar() {
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => setMobileOpen(false)}
           />
-          <motion.aside
-            initial={{ x: -320 }}
-            animate={{ x: 0 }}
-            exit={{ x: -320 }}
-            transition={{ type: "spring", stiffness: 280, damping: 30 }}
+          <aside
             className="relative flex flex-col w-72 max-w-[85vw] h-full glass-strong p-4 gap-2 border-r border-white/10"
           >
             <button
@@ -167,7 +162,7 @@ export function Sidebar() {
             {LogoBlock}
             <NavList showLabels />
             <UserBlock />
-          </motion.aside>
+          </aside>
         </div>
       )}
 
