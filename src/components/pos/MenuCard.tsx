@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { memo } from "react";
 import { Plus, Flame } from "lucide-react";
 import type { MenuItem } from "@/lib/menu-data";
 import { useCurrency } from "@/lib/settings-store";
