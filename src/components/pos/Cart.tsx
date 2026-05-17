@@ -158,7 +158,7 @@ export function Cart({
       <aside
         className={`shrink-0 glass-strong flex flex-col overflow-hidden lg:relative lg:z-auto lg:w-[400px] xl:w-[440px] lg:rounded-2xl lg:h-[calc(100vh-2rem)] lg:sticky lg:top-4 ${
           mobileOpen
-            ? "fixed inset-0 z-50 rounded-none"
+            ? "fixed inset-x-0 bottom-0 top-0 z-50 rounded-none w-full max-w-none"
             : "hidden lg:flex"
         }`}
       >
@@ -173,7 +173,7 @@ export function Cart({
           </button>
         )}
         {/* Header */}
-        <div className="p-5 border-b border-white/5">
+        <div className="p-4 sm:p-5 border-b border-white/5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="size-10 rounded-xl bg-primary/15 grid place-items-center">
@@ -197,7 +197,7 @@ export function Cart({
         </div>
 
         {/* Order type pills */}
-        <div className="grid grid-cols-3 gap-1.5 mt-4 p-1 bg-black/30 rounded-xl">
+        <div className="grid grid-cols-3 gap-1.5 mt-4 p-1 bg-secondary/70 rounded-xl">
           {(["Dine-in", "Takeaway", "Delivery"] as const).map((t) => {
             const active = orderType === t;
             return (
@@ -236,7 +236,7 @@ export function Cart({
       </div>
 
       {/* Lines */}
-      <div className="flex-1 overflow-y-auto scrollbar-luxe p-4 space-y-2">
+      <div className="flex-1 overflow-y-auto scrollbar-luxe p-3 sm:p-4 space-y-2">
         {lines.length === 0 ? (
             <div className="h-full grid place-items-center text-center px-6 py-20">
               <div>
@@ -267,7 +267,7 @@ export function Cart({
                     {sym} {(line.item.price * line.qty).toFixed(2)}
                   </p>
                 </div>
-                <div className="flex items-center gap-1 bg-black/40 rounded-lg p-1">
+                <div className="flex items-center gap-1 bg-secondary/70 rounded-lg p-1">
                   <button
                     onClick={() => onDec(line.item.id)}
                     className="size-7 grid place-items-center rounded-md hover:bg-white/5 text-muted-foreground hover:text-foreground"
@@ -296,7 +296,7 @@ export function Cart({
       </div>
 
       {/* Totals */}
-      <div className="border-t border-white/5 p-5 space-y-4">
+      <div className="border-t border-white/5 p-4 sm:p-5 space-y-4">
         <div className="space-y-1.5 text-sm">
           <div className="flex justify-between text-muted-foreground">
             <span>Subtotal</span>
@@ -327,10 +327,10 @@ export function Cart({
           <button
             disabled={lines.length === 0}
             onClick={handleCharge}
-            className="flex-1 h-14 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center justify-center gap-2 glow-red disabled:opacity-40 disabled:glow-red-none disabled:cursor-not-allowed transition-opacity"
+            className="min-w-0 flex-1 h-14 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center justify-center gap-2 glow-red disabled:opacity-40 disabled:glow-red-none disabled:cursor-not-allowed transition-opacity px-3"
           >
             {orderType === "Dine-in" ? <Utensils className="size-5" /> : <CreditCard className="size-5" />}
-            <span className="font-display tracking-widest text-lg">
+            <span className="font-display tracking-widest text-sm sm:text-lg truncate">
               {orderType === "Dine-in" ? (activeTable ? `ADD TO TABLE ${activeTable}` : `SEND TO TABLE`) : `CHARGE ${sym} ${total.toFixed(2)}`}
             </span>
           </button>
