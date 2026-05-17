@@ -30,7 +30,7 @@ export function CategoryRail({
   onChange: (c: Category) => void;
 }) {
   return (
-    <div className="flex gap-2 overflow-x-auto scrollbar-luxe pb-2 -mx-1 px-1">
+    <div className="flex gap-2 overflow-x-auto scrollbar-luxe pb-2 -mx-3 sm:-mx-1 px-3 sm:px-1 max-w-full">
       {CATEGORIES.map((c) => {
         const Icon = ICONS[c.icon as keyof typeof ICONS] ?? Sparkles;
         const isActive = active === c.id;
@@ -38,7 +38,7 @@ export function CategoryRail({
           <button
             key={c.id}
             onClick={() => onChange(c.id)}
-            className={`relative shrink-0 flex items-center gap-2 px-4 h-11 rounded-xl text-sm font-medium transition-colors ${
+            className={`relative shrink-0 flex items-center gap-2 px-3 sm:px-4 h-11 rounded-xl text-sm font-medium transition-colors ${
               isActive
                 ? "bg-primary text-primary-foreground glow-red"
                 : "glass text-muted-foreground hover:text-foreground"
