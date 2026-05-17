@@ -70,11 +70,11 @@ function POSPage() {
   const total = subtotal + tax;
 
   return (
-    <div className="min-h-screen p-3 sm:p-4">
-      <div className="flex flex-col lg:flex-row gap-4 max-w-[1800px] mx-auto">
+    <div className="min-h-screen overflow-x-hidden p-3 sm:p-4 pb-28 lg:pb-4">
+      <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 max-w-[1800px] mx-auto w-full">
         <Sidebar />
 
-        <main className="flex-1 min-w-0 flex flex-col gap-4 sm:gap-5">
+        <main className="flex-1 min-w-0 w-full flex flex-col gap-3 sm:gap-5">
           <TopBar query={query} setQuery={setQuery} />
 
           {/* Stat strip — live data */}
@@ -82,7 +82,7 @@ function POSPage() {
 
           <CategoryRail active={cat} onChange={setCat} />
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 pb-24 lg:pb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 pb-10 lg:pb-8">
             {filtered.map((item) => (
               <MenuCard key={item.id} item={item} onAdd={() => addItem(item)} />
             ))}
@@ -108,12 +108,12 @@ function POSPage() {
       {/* Mobile floating cart button */}
       <button
         onClick={() => setCartOpen(true)}
-        className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-30 h-14 px-5 rounded-2xl bg-primary text-primary-foreground font-semibold shadow-xl glow-red flex items-center gap-3"
+        className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-30 h-14 w-[calc(100%-1.5rem)] max-w-sm px-4 rounded-2xl bg-primary text-primary-foreground font-semibold shadow-xl glow-red flex items-center justify-center gap-3"
       >
-        <span className="size-7 rounded-full bg-black/30 grid place-items-center text-xs font-mono-num">
+        <span className="size-7 rounded-full bg-primary-foreground/15 grid place-items-center text-xs font-mono-num shrink-0">
           {count}
         </span>
-        <span className="font-display tracking-widest text-sm">
+        <span className="font-display tracking-widest text-sm truncate">
           {count === 0 ? "VIEW CART" : `CART · Rs ${total.toFixed(2)}`}
         </span>
       </button>
@@ -161,11 +161,11 @@ function LiveStats() {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
       {items.map((s) => (
         <div
           key={s.label}
-          className="glass-strong rounded-2xl p-4"
+            className="glass-strong rounded-2xl p-3 sm:p-4 min-w-0"
         >
           <div className="flex items-center justify-between">
             <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -174,7 +174,7 @@ function LiveStats() {
             {s.live && <span className="size-2 rounded-full bg-primary pulse-glow" />}
           </div>
           <p
-            className={`font-mono-num text-2xl font-bold mt-2 ${
+             className={`font-mono-num text-xl sm:text-2xl font-bold mt-2 truncate ${
               s.accent === "gold"
                 ? "gradient-text-gold"
                 : s.accent === "red"
