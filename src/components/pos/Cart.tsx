@@ -181,12 +181,7 @@ export function Cart({
                   active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {active && (
-                  <motion.span
-                    layoutId="order-type"
-                    className="absolute inset-0 bg-white/5 rounded-lg border border-white/10"
-                  />
-                )}
+                {active && <span className="absolute inset-0 bg-white/5 rounded-lg border border-white/10" />}
                 <span className="relative">{t}</span>
               </button>
             );
@@ -215,14 +210,8 @@ export function Cart({
 
       {/* Lines */}
       <div className="flex-1 overflow-y-auto scrollbar-luxe p-4 space-y-2">
-        <AnimatePresence mode="popLayout">
-          {lines.length === 0 ? (
-            <motion.div
-              key="empty"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="h-full grid place-items-center text-center px-6 py-20"
-            >
+        {lines.length === 0 ? (
+            <div className="h-full grid place-items-center text-center px-6 py-20">
               <div>
                 <div className="size-16 rounded-2xl glass mx-auto grid place-items-center mb-4">
                   <Sparkles className="size-7 text-gold" />
@@ -232,16 +221,11 @@ export function Cart({
                   Tap any menu item to add it to the order. AI suggestions update live.
                 </p>
               </div>
-            </motion.div>
+            </div>
           ) : (
             lines.map((line) => (
-              <motion.div
+              <div
                 key={line.item.id}
-                layout
-                initial={{ opacity: 0, x: 20, scale: 0.95 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: -20, scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 className="flex items-center gap-3 p-2.5 rounded-xl glass hover:border-primary/20 transition-colors"
               >
                 <img
@@ -279,10 +263,9 @@ export function Cart({
                 >
                   <Trash2 className="size-3.5" />
                 </button>
-              </motion.div>
+              </div>
             ))
           )}
-        </AnimatePresence>
       </div>
 
       {/* Totals */}
@@ -314,9 +297,7 @@ export function Cart({
             <Printer className="size-5 text-gold" />
             <span className="font-display tracking-widest text-xs hidden sm:inline">PRINT</span>
           </button>
-          <motion.button
-            whileHover={{ scale: lines.length ? 1.01 : 1 }}
-            whileTap={{ scale: lines.length ? 0.99 : 1 }}
+          <button
             disabled={lines.length === 0}
             onClick={handleCharge}
             className="flex-1 h-14 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center justify-center gap-2 glow-red disabled:opacity-40 disabled:glow-red-none disabled:cursor-not-allowed transition-opacity"
@@ -325,23 +306,16 @@ export function Cart({
             <span className="font-display tracking-widest text-lg">
               {orderType === "Dine-in" ? (activeTable ? `ADD TO TABLE ${activeTable}` : `SEND TO TABLE`) : `CHARGE ${sym} ${total.toFixed(2)}`}
             </span>
-          </motion.button>
+          </button>
         </div>
       </div>
 
-      <AnimatePresence>
-        {showTableModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+      {showTableModal && (
+          <div
             className="fixed inset-0 z-50 bg-background/90 grid place-items-center p-4"
             onClick={() => setShowTableModal(false)}
           >
-            <motion.div
-              initial={{ scale: 0.95, y: 10 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 10 }}
+            <div
               onClick={(e) => e.stopPropagation()}
               className="glass-strong rounded-2xl p-6 w-full max-w-sm border border-white/10"
             >
@@ -385,23 +359,17 @@ export function Cart({
               >
                 Send to Table
               </button>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
 
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
+      {toast && (
+          <div
             className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 glass-strong border border-emerald-400/30 rounded-xl px-4 py-3 text-sm text-emerald-300"
           >
             {toast}
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
     </aside>
   );
 }
