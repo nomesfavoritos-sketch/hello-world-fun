@@ -1,5 +1,4 @@
 import { Search, Bell, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { getCurrentUser, ROLE_LABELS, type AppUser } from "@/lib/users-store";
 
@@ -60,20 +59,18 @@ export function TopBar({
           />
         </div>
 
-        <motion.button
-          whileTap={{ scale: 0.95 }}
+        <button
           className="relative size-11 grid place-items-center rounded-xl glass hover:border-gold/30 transition-colors"
         >
           <Sparkles className="size-4 text-gold" />
-        </motion.button>
+        </button>
 
-        <motion.button
-          whileTap={{ scale: 0.95 }}
+        <button
           className="relative size-11 grid place-items-center rounded-xl glass"
         >
           <Bell className="size-4" />
           <span className="absolute top-2 right-2 size-2 rounded-full bg-primary pulse-glow" />
-        </motion.button>
+        </button>
 
         {me && (
           <div className="hidden sm:flex items-center gap-3 pl-2 ml-1 border-l border-white/5">
