@@ -398,5 +398,6 @@ export function Cart({
           </div>
         )}
     </aside>
+    </>
   );
 }
