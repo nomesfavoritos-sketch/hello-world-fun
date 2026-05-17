@@ -32,6 +32,7 @@ function POSPage() {
   const [cat, setCat] = useState<Category>("All");
   const [query, setQuery] = useState("");
   const [lines, setLines] = useState<CartLine[]>([]);
+  const [cartOpen, setCartOpen] = useState(false);
 
   const filtered = useMemo(() => {
     return MENU.filter((m) => (cat === "All" ? true : m.category === cat)).filter(
@@ -63,12 +64,17 @@ function POSPage() {
   const remove = (id: string) => setLines((p) => p.filter((l) => l.item.id !== id));
   const clear = () => setLines([]);
 
+  const count = lines.reduce((s, l) => s + l.qty, 0);
+  const subtotal = lines.reduce((s, l) => s + l.item.price * l.qty, 0);
+  const tax = subtotal * 0.05;
+  const total = subtotal + tax;
+
   return (
-    <div className="min-h-screen p-4">
-      <div className="flex gap-4 max-w-[1800px] mx-auto">
+    <div className="min-h-screen p-3 sm:p-4">
+      <div className="flex flex-col lg:flex-row gap-4 max-w-[1800px] mx-auto">
         <Sidebar />
 
-        <main className="flex-1 min-w-0 flex flex-col gap-5">
+        <main className="flex-1 min-w-0 flex flex-col gap-4 sm:gap-5">
           <TopBar query={query} setQuery={setQuery} />
 
           {/* Stat strip — live data */}
@@ -76,7 +82,7 @@ function POSPage() {
 
           <CategoryRail active={cat} onChange={setCat} />
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 pb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 pb-24 lg:pb-8">
             {filtered.map((item) => (
               <MenuCard key={item.id} item={item} onAdd={() => addItem(item)} />
             ))}
@@ -88,8 +94,29 @@ function POSPage() {
           </div>
         </main>
 
-        <Cart lines={lines} onInc={inc} onDec={dec} onRemove={remove} onClear={clear} />
+        <Cart
+          lines={lines}
+          onInc={inc}
+          onDec={dec}
+          onRemove={remove}
+          onClear={clear}
+          mobileOpen={cartOpen}
+          onMobileClose={() => setCartOpen(false)}
+        />
       </div>
+
+      {/* Mobile floating cart button */}
+      <button
+        onClick={() => setCartOpen(true)}
+        className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-30 h-14 px-5 rounded-2xl bg-primary text-primary-foreground font-semibold shadow-xl glow-red flex items-center gap-3"
+      >
+        <span className="size-7 rounded-full bg-black/30 grid place-items-center text-xs font-mono-num">
+          {count}
+        </span>
+        <span className="font-display tracking-widest text-sm">
+          {count === 0 ? "VIEW CART" : `CART · Rs ${total.toFixed(2)}`}
+        </span>
+      </button>
     </div>
   );
 }

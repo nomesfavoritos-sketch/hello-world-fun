@@ -136,7 +136,7 @@ export function Sidebar() {
       {/* Mobile hamburger button */}
       <button
         onClick={() => setMobileOpen(true)}
-        className="lg:hidden fixed top-4 right-4 z-40 size-11 grid place-items-center rounded-xl glass-strong border border-white/10 text-foreground"
+        className="lg:hidden fixed top-3 left-3 z-40 size-10 grid place-items-center rounded-xl glass-strong border border-white/10 text-foreground shadow-lg"
         aria-label="Open menu"
       >
         <Menu className="size-5" />

@@ -37,12 +37,12 @@ export function TopBar({
   const firstName = me?.name?.split(" ")[0] ?? "GUEST";
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-      <div>
-        <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 pl-14 lg:pl-0">
+      <div className="min-w-0">
+        <p className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-muted-foreground">
           Point of Sale
         </p>
-        <h1 className="font-display text-3xl sm:text-4xl tracking-wider mt-1">
+        <h1 className="font-display text-2xl sm:text-3xl md:text-4xl tracking-wider mt-1 truncate">
           {greet},{" "}
           <span className="gradient-text-red">{firstName.toUpperCase()}</span>
         </h1>
@@ -54,13 +54,13 @@ export function TopBar({
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search menu, SKU, deal…"
+            placeholder="Search menu…"
             className="w-full glass h-11 rounded-xl pl-10 pr-4 text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
           />
         </div>
 
         <button
-          className="relative size-11 grid place-items-center rounded-xl glass hover:border-gold/30 transition-colors"
+          className="hidden sm:grid relative size-11 place-items-center rounded-xl glass hover:border-gold/30 transition-colors"
         >
           <Sparkles className="size-4 text-gold" />
         </button>
@@ -73,7 +73,7 @@ export function TopBar({
         </button>
 
         {me && (
-          <div className="hidden sm:flex items-center gap-3 pl-2 ml-1 border-l border-white/5">
+          <div className="hidden md:flex items-center gap-3 pl-2 ml-1 border-l border-white/5">
             <div className="text-right">
               <p className="text-sm font-medium leading-none">{me.name}</p>
               <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">

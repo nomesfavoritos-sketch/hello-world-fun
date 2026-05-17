@@ -25,12 +25,16 @@ export function Cart({
   onDec,
   onRemove,
   onClear,
+  mobileOpen = false,
+  onMobileClose,
 }: {
   lines: CartLine[];
   onInc: (id: string) => void;
   onDec: (id: string) => void;
   onRemove: (id: string) => void;
   onClear: () => void;
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
 }) {
   const sym = useCurrency();
   const subtotal = lines.reduce((s, l) => s + l.item.price * l.qty, 0);
@@ -144,9 +148,32 @@ export function Cart({
   };
 
   return (
-    <aside className="w-full lg:w-[400px] xl:w-[440px] shrink-0 glass-strong rounded-2xl flex flex-col h-[calc(100vh-2rem)] sticky top-4 overflow-hidden">
-      {/* Header */}
-      <div className="p-5 border-b border-white/5">
+    <>
+      {mobileOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-40 bg-background/80"
+          onClick={onMobileClose}
+        />
+      )}
+      <aside
+        className={`shrink-0 glass-strong flex flex-col overflow-hidden lg:relative lg:z-auto lg:w-[400px] xl:w-[440px] lg:rounded-2xl lg:h-[calc(100vh-2rem)] lg:sticky lg:top-4 ${
+          mobileOpen
+            ? "fixed inset-0 z-50 rounded-none"
+            : "hidden lg:flex"
+        }`}
+      >
+        {/* Mobile close */}
+        {onMobileClose && (
+          <button
+            onClick={onMobileClose}
+            className="lg:hidden absolute top-3 right-3 z-10 size-9 grid place-items-center rounded-lg hover:bg-white/5 text-muted-foreground"
+            aria-label="Close cart"
+          >
+            <X className="size-5" />
+          </button>
+        )}
+        {/* Header */}
+        <div className="p-5 border-b border-white/5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="size-10 rounded-xl bg-primary/15 grid place-items-center">
@@ -371,5 +398,6 @@ export function Cart({
           </div>
         )}
     </aside>
+    </>
   );
 }
