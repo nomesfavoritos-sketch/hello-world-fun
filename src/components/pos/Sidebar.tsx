@@ -24,7 +24,7 @@ import {
   ROLE_NAV,
   type AppUser,
 } from "@/lib/users-store";
-import { useLogo, getSettings } from "@/lib/settings-store";
+import { useLogo, useShopName } from "@/lib/settings-store";
 
 const NAV = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" as const },
