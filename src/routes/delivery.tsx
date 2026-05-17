@@ -409,17 +409,11 @@ function NewDeliveryModal({
   const valid = customer && phone && addr && parseFloat(amount) > 0;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+    <div
       className="fixed inset-0 z-50 bg-background/90 grid place-items-center p-4"
       onClick={onClose}
     >
-      <motion.div
-        initial={{ scale: 0.95, y: 10 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.95, y: 10 }}
+      <div
         onClick={(e) => e.stopPropagation()}
         className="glass-strong rounded-2xl p-6 w-full max-w-md border border-white/10"
       >
@@ -469,8 +463,8 @@ function NewDeliveryModal({
         >
           Create Delivery
         </button>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 
