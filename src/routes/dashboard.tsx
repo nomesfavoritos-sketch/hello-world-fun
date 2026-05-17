@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import {
   TrendingUp,
   ShoppingBag,
@@ -72,7 +71,7 @@ function AdminDash({ me }: { me: AppUser }) {
     <PageShell eyebrow={Eyebrow({ me })} title="DASHBOARD" subtitle="Real-time pulse across the entire operation.">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {stats.map((s) => (
-          <motion.div key={s.label} whileHover={{ y: -2 }} className="glass-strong rounded-2xl p-4">
+          <div key={s.label} className="glass-strong rounded-2xl p-4">
             <div className="flex items-center justify-between">
               <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{s.label}</p>
               <s.icon className="size-4 text-muted-foreground" />
@@ -85,7 +84,7 @@ function AdminDash({ me }: { me: AppUser }) {
                 <ArrowUpRight className="size-3" /> {s.trend}
               </p>
             )}
-          </motion.div>
+          </div>
         ))}
       </div>
 
@@ -94,11 +93,9 @@ function AdminDash({ me }: { me: AppUser }) {
         <p className="font-display text-xl tracking-wider mt-1 mb-4">TODAY · 12H</p>
         <div className="flex items-end gap-2 h-48">
           {HOURLY.map((v, i) => (
-            <motion.div
+            <div
               key={i}
-              initial={{ height: 0 }}
-              animate={{ height: `${(v / max) * 100}%` }}
-              transition={{ delay: i * 0.04, type: "spring", stiffness: 80 }}
+              style={{ height: `${(v / max) * 100}%` }}
               className="flex-1 rounded-t-md bg-gradient-to-t from-primary/80 to-primary/30"
             />
           ))}
@@ -240,7 +237,7 @@ function Stat({
   accent?: "gold" | "red";
 }) {
   return (
-    <motion.div whileHover={{ y: -2 }} className="glass-strong rounded-2xl p-4">
+    <div className="glass-strong rounded-2xl p-4">
       <div className="flex items-center justify-between">
         <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</p>
         <Icon className="size-4 text-muted-foreground" />
@@ -250,7 +247,7 @@ function Stat({
       >
         {value}
       </p>
-    </motion.div>
+    </div>
   );
 }
 
