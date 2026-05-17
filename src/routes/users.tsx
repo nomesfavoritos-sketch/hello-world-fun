@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { UserPlus, Trash2, Shield, Check, X, Power, Pencil } from "lucide-react";
 import { PageShell } from "@/components/pos/PageShell";
 import {
@@ -218,19 +217,12 @@ function UsersPage() {
         </ul>
       </div>
 
-      <AnimatePresence>
-        {mode && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+      {mode && (
+          <div
             className="fixed inset-0 bg-black/60 grid place-items-center z-50 p-4"
             onClick={close}
           >
-            <motion.form
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
+            <form
               onClick={(e) => e.stopPropagation()}
               onSubmit={submit}
               className="glass-strong rounded-2xl p-6 w-full max-w-md"
@@ -309,23 +301,17 @@ function UsersPage() {
               >
                 {isEdit ? "Save changes" : "Create user"}
               </button>
-            </motion.form>
-          </motion.div>
+            </form>
+          </div>
         )}
-      </AnimatePresence>
 
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
+      {toast && (
+          <div
             className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 glass-strong border border-emerald-400/30 rounded-xl px-4 py-3 text-sm text-emerald-300 flex items-center gap-2"
           >
             <Check className="size-4" /> {toast}
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
     </PageShell>
   );
 }
