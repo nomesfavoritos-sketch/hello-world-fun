@@ -10,7 +10,7 @@ const TAG_STYLES: Record<string, string> = {
   Deal: "bg-violet-400/15 text-violet-300 border-violet-400/30",
 };
 
-export function MenuCard({ item, onAdd }: { item: MenuItem; onAdd: () => void }) {
+function MenuCardBase({ item, onAdd }: { item: MenuItem; onAdd: () => void }) {
   const sym = useCurrency();
   return (
     <div
@@ -23,13 +23,14 @@ export function MenuCard({ item, onAdd }: { item: MenuItem; onAdd: () => void })
           onAdd();
         }
       }}
-      className="group relative overflow-hidden rounded-2xl glass-strong hover:border-primary/30 hover:-translate-y-1 transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
+      className="group relative overflow-hidden rounded-2xl glass-strong hover:border-primary/30 hover:-translate-y-1 transition-transform duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
     >
       <div className="relative aspect-square overflow-hidden">
         <img
           src={item.image}
           alt={item.name}
           loading="lazy"
+          decoding="async"
           width={768}
           height={768}
           className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -47,18 +48,16 @@ export function MenuCard({ item, onAdd }: { item: MenuItem; onAdd: () => void })
           </div>
         )}
 
-        <motion.button
+        <button
           onClick={(event) => {
             event.stopPropagation();
             onAdd();
           }}
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.92 }}
-          className="absolute bottom-3 right-3 size-11 rounded-full bg-primary text-primary-foreground grid place-items-center glow-red shadow-lg shadow-primary/25 opacity-100 transition-opacity"
+          className="absolute bottom-3 right-3 size-11 rounded-full bg-primary text-primary-foreground grid place-items-center glow-red shadow-lg shadow-primary/25 transition-transform duration-150 hover:scale-110 active:scale-90"
           aria-label={`Add ${item.name}`}
         >
           <Plus className="size-5" strokeWidth={2.5} />
-        </motion.button>
+        </button>
       </div>
 
       <div className="p-4 pt-3">
@@ -73,3 +72,5 @@ export function MenuCard({ item, onAdd }: { item: MenuItem; onAdd: () => void })
     </div>
   );
 }
+
+export const MenuCard = memo(MenuCardBase);
