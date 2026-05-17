@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { Globe, Phone, MapPin, Clock, CheckCircle2, X, ChevronRight, Bike, Store, Utensils, ExternalLink, Trash2 } from "lucide-react";
 import { PageShell } from "@/components/pos/PageShell";
 import { useCurrency } from "@/lib/settings-store";
@@ -132,7 +131,6 @@ function OnlineOrdersPage() {
 
       <div className="glass-strong rounded-2xl p-5">
         <div className="flex flex-col gap-3">
-          <AnimatePresence mode="popLayout">
             {visible.length === 0 && (
               <div className="text-center py-12 text-muted-foreground text-sm">
                 No {filter} online orders. Share your <Link to="/order" className="text-primary hover:underline">storefront link</Link> with customers.
@@ -142,12 +140,8 @@ function OnlineOrdersPage() {
               const TIcon = typeIcon(o.type);
               const next = nextStatus(o);
               return (
-                <motion.div
+                <div
                   key={o.id}
-                  layout
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.97 }}
                   className="glass rounded-xl p-4"
                 >
                   <div className="flex items-center justify-between flex-wrap gap-2">
@@ -199,10 +193,8 @@ function OnlineOrdersPage() {
                   )}
 
                   <div className="mt-3 h-1.5 rounded-full bg-white/5 overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${progress(o)}%` }}
-                      transition={{ duration: 0.6 }}
+                    <div
+                      style={{ width: `${progress(o)}%` }}
                       className="h-full bg-gradient-to-r from-primary to-gold"
                     />
                   </div>
@@ -245,10 +237,9 @@ function OnlineOrdersPage() {
                       </button>
                     )}
                   </div>
-                </motion.div>
+                </div>
               );
             })}
-          </AnimatePresence>
         </div>
       </div>
     </PageShell>
