@@ -506,9 +506,8 @@ function StaffSection({
                   ? { label: "Started", value: String(s.kitchenStarts) }
                   : { label: "Orders", value: String(s.orders) };
             return (
-              <motion.button
+              <button
                 key={s.user.id}
-                whileHover={{ y: -3 }}
                 onClick={() => setSelected(s.user.id)}
                 className="glass rounded-2xl p-4 text-left relative overflow-hidden group"
               >
@@ -554,7 +553,7 @@ function StaffSection({
                     ? `Last active ${new Date(s.lastActive).toLocaleString()}`
                     : "No activity in range"}
                 </p>
-              </motion.button>
+              </button>
             );
           })}
         </div>
@@ -632,9 +631,7 @@ function StaffDetail({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+    <div
       className="glass-strong rounded-2xl p-5 relative overflow-hidden"
     >
       <div className={`absolute inset-0 bg-gradient-to-br ${accent} opacity-5 pointer-events-none`} />
@@ -784,7 +781,7 @@ function StaffDetail({
           </table>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
