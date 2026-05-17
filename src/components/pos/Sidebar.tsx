@@ -24,7 +24,7 @@ import {
   ROLE_NAV,
   type AppUser,
 } from "@/lib/users-store";
-import { useLogo, getSettings } from "@/lib/settings-store";
+import { useLogo, useShopName } from "@/lib/settings-store";
 
 const NAV = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" as const },
@@ -44,7 +44,7 @@ export function Sidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const nav = useNavigate();
   const logo = useLogo();
-  const shopName = getSettings().shopName;
+  const shopName = useShopName();
 
   useEffect(() => {
     setMe(getCurrentUser());
@@ -86,41 +86,25 @@ export function Sidebar() {
 
   const NavList = ({ showLabels = true }: { showLabels?: boolean }) => (
     <nav className="flex flex-col gap-1 flex-1 overflow-y-auto">
-      {items.map((item) => (
-        <Link
-          key={item.label}
-          to={item.to}
-          activeOptions={{ exact: true }}
-          onClick={() => setMobileOpen(false)}
-          className="group relative flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-white/[0.03] data-[status=active]:bg-primary/15 data-[status=active]:text-foreground"
-        >
-          {({ isActive }) => (
-            <motion.span
-              whileHover={{ x: 2 }}
-              whileTap={{ scale: 0.97 }}
-              className="flex items-center gap-3 w-full"
-            >
-              {isActive && (
-                <motion.span
-                  layoutId={showLabels ? "active-pill-mobile" : "active-pill"}
-                  className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-primary"
-                />
-              )}
-              <item.icon className="size-5 shrink-0" />
-              {showLabels ? (
-                <span>{item.label}</span>
-              ) : (
-                <span className="hidden xl:inline">{item.label}</span>
-              )}
-              {isActive && showLabels && (
-                <span className="ml-auto text-[10px] font-mono-num text-primary">
-                  LIVE
-                </span>
-              )}
-            </motion.span>
-          )}
-        </Link>
-      ))}
+      {items.map((item) => {
+        const Icon = item.icon;
+        return (
+          <Link
+            key={item.label}
+            to={item.to}
+            activeOptions={{ exact: true }}
+            onClick={() => setMobileOpen(false)}
+            className="group relative flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-white/[0.03] hover:translate-x-[2px] active:scale-[0.97] data-[status=active]:bg-primary/15 data-[status=active]:text-foreground data-[status=active]:before:absolute data-[status=active]:before:left-0 data-[status=active]:before:top-2 data-[status=active]:before:bottom-2 data-[status=active]:before:w-[3px] data-[status=active]:before:rounded-full data-[status=active]:before:bg-primary"
+          >
+            <Icon className="size-5 shrink-0" />
+            {showLabels ? (
+              <span>{item.label}</span>
+            ) : (
+              <span className="hidden xl:inline">{item.label}</span>
+            )}
+          </Link>
+        );
+      })}
     </nav>
   );
 

@@ -99,7 +99,7 @@ function LiveStats() {
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    const id = setInterval(() => setTick((t) => t + 1), 5000);
+    const id = setInterval(() => setTick((t) => t + 1), 15000);
     const off = onOnlineOrdersChange(() => setTick((t) => t + 1));
     const onStorage = () => setTick((t) => t + 1);
     window.addEventListener("storage", onStorage);
