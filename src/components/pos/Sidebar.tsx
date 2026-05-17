@@ -44,7 +44,7 @@ export function Sidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const nav = useNavigate();
   const logo = useLogo();
-  const shopName = getSettings().shopName;
+  const shopName = useShopName();
 
   useEffect(() => {
     setMe(getCurrentUser());
