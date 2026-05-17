@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { Clock, ChefHat, CheckCircle2, Flame } from "lucide-react";
 import { PageShell } from "@/components/pos/PageShell";
 import { recordKitchenAction } from "@/lib/kitchen-store";
@@ -78,11 +77,8 @@ function KitchenPage() {
               </div>
               <div className="flex flex-col gap-3">
                 {list.map((t) => (
-                  <motion.div
-                    layout
+                  <div
                     key={t.id}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
                     className="glass rounded-xl p-3"
                   >
                     <div className="flex items-center justify-between">
@@ -114,7 +110,7 @@ function KitchenPage() {
                         </button>
                       )}
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
                 {list.length === 0 && (
                   <div className="text-xs text-muted-foreground text-center py-8 border border-dashed border-white/10 rounded-xl">
