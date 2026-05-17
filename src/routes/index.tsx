@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import { Sidebar } from "@/components/pos/Sidebar";
 import { TopBar } from "@/components/pos/TopBar";
 import { CategoryRail } from "@/components/pos/CategoryRail";
@@ -125,8 +124,7 @@ function LiveStats() {
     return { revenue, orders, avg, queue };
   }, [tick]);
 
-  const fmt = (n: number) =>
-    n.toLocaleString(undefined, { style: "currency", currency: "USD" });
+  const fmt = (n: number) => `Rs ${n.toFixed(2)}`;
 
   const items = [
     { label: "Today's Revenue", value: fmt(stats.revenue), trend: `${stats.orders} orders`, accent: "gold" as const },
@@ -138,9 +136,8 @@ function LiveStats() {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
       {items.map((s) => (
-        <motion.div
+        <div
           key={s.label}
-          whileHover={{ y: -2 }}
           className="glass-strong rounded-2xl p-4"
         >
           <div className="flex items-center justify-between">
@@ -161,7 +158,7 @@ function LiveStats() {
             {s.value}
           </p>
           <p className="text-xs text-muted-foreground mt-1">{s.trend}</p>
-        </motion.div>
+        </div>
       ))}
     </div>
   );

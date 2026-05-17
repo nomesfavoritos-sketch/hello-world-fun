@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AnimatePresence, motion } from "framer-motion";
 import { Bike, MapPin, Phone, Star, Plus, X, ChevronRight, CheckCircle2, Clock, Package, Navigation } from "lucide-react";
 import { PageShell } from "@/components/pos/PageShell";
 import { useEffect, useMemo, useState } from "react";
@@ -196,25 +195,20 @@ function DeliveryPage() {
             <span className="text-xs text-muted-foreground font-mono-num">{active.length} live</span>
           </div>
           <div className="flex flex-col gap-3">
-            <AnimatePresence mode="popLayout">
               {active.length === 0 && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12 text-muted-foreground text-sm">
+                <div className="text-center py-12 text-muted-foreground text-sm">
                   {isRider
                     ? "No deliveries assigned to you yet. Hang tight!"
                     : "No active trips. Create a new delivery to get started."}
-                </motion.div>
+                </div>
               )}
               {active.map((t) => {
                 const rider = riders.find((r) => r.id === t.riderId);
                 const i = STAGES.indexOf(t.stage);
                 const isLast = i === STAGES.length - 1;
                 return (
-                  <motion.div
+                  <div
                     key={t.id}
-                    layout
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.97 }}
                     className="glass rounded-xl p-4"
                   >
                     <div className="flex items-center justify-between flex-wrap gap-2">
@@ -239,10 +233,8 @@ function DeliveryPage() {
                     </div>
 
                     <div className="mt-3 h-1.5 rounded-full bg-white/5 overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${stageProgress(t.stage)}%` }}
-                        transition={{ duration: 0.6 }}
+                      <div
+                        style={{ width: `${stageProgress(t.stage)}%` }}
                         className="h-full bg-gradient-to-r from-primary to-gold"
                       />
                     </div>
@@ -293,7 +285,7 @@ function DeliveryPage() {
                     </div>
 
                     {!isRider && assigning === t.id && (
-                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mt-3 pt-3 border-t border-white/5">
+                      <div className="mt-3 pt-3 border-t border-white/5">
                         <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Choose rider</p>
                         <div className="flex flex-wrap gap-2">
                           {riders.length === 0 && (
@@ -316,12 +308,11 @@ function DeliveryPage() {
                             Cancel
                           </button>
                         </div>
-                      </motion.div>
+                      </div>
                     )}
-                  </motion.div>
+                  </div>
                 );
               })}
-            </AnimatePresence>
           </div>
 
           {completed.length > 0 && (
@@ -381,11 +372,9 @@ function DeliveryPage() {
         )}
       </div>
 
-      <AnimatePresence>
-        {showNew && canDispatch && (
-          <NewDeliveryModal riders={riders} onClose={() => setShowNew(false)} onCreate={addTrip} />
-        )}
-      </AnimatePresence>
+      {showNew && canDispatch && (
+        <NewDeliveryModal riders={riders} onClose={() => setShowNew(false)} onCreate={addTrip} />
+      )}
     </PageShell>
   );
 }
@@ -420,17 +409,11 @@ function NewDeliveryModal({
   const valid = customer && phone && addr && parseFloat(amount) > 0;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+    <div
       className="fixed inset-0 z-50 bg-background/90 grid place-items-center p-4"
       onClick={onClose}
     >
-      <motion.div
-        initial={{ scale: 0.95, y: 10 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.95, y: 10 }}
+      <div
         onClick={(e) => e.stopPropagation()}
         className="glass-strong rounded-2xl p-6 w-full max-w-md border border-white/10"
       >
@@ -480,8 +463,8 @@ function NewDeliveryModal({
         >
           Create Delivery
         </button>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 

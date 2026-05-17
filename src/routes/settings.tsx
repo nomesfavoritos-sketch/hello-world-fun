@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { Building2, Receipt, Printer, Users, Bell, Globe, Check, Database, Trash2, Image as ImageIcon, Upload, X } from "lucide-react";
 import { PageShell } from "@/components/pos/PageShell";
 import { DEFAULT_SETTINGS, getSettings, saveSettings, type ShopSettings } from "@/lib/settings-store";
@@ -334,18 +333,13 @@ function SettingsPage() {
         </ul>
       </Card>
 
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
+      {toast && (
+          <div
             className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 glass-strong border border-emerald-400/30 rounded-xl px-4 py-3 text-sm text-emerald-300 flex items-center gap-2"
           >
             <Check className="size-4" /> {toast}
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
     </PageShell>
   );
 }

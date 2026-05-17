@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { Flame, KeyRound, User as UserIcon } from "lucide-react";
 import { login, ROLE_HOME } from "@/lib/users-store";
 import { useLogo, getSettings } from "@/lib/settings-store";
@@ -28,9 +27,7 @@ function LoginPage() {
 
   return (
     <div className="min-h-screen grid place-items-center p-4 bg-background">
-      <motion.form
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
+      <form
         onSubmit={submit}
         className="glass-strong rounded-3xl p-8 w-full max-w-sm"
       >
@@ -95,7 +92,7 @@ function LoginPage() {
         <p className="text-[10px] text-center text-muted-foreground mt-5">
           Default admin · <span className="font-mono-num">admin / 1234</span>
         </p>
-      </motion.form>
+      </form>
     </div>
   );
 }

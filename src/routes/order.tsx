@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Search, Plus, Minus, ShoppingBag, Trash2, X, CheckCircle2, Bike, Store, Utensils, Flame } from "lucide-react";
 import { MENU, CATEGORIES, type Category, type MenuItem } from "@/lib/menu-data";
 import { getSettings, useCurrency, useLogo } from "@/lib/settings-store";
@@ -189,9 +188,8 @@ function OnlineOrderPage() {
           {filtered.map((item) => {
             const inCart = lines.find((l) => l.item.id === item.id);
             return (
-              <motion.div
+              <div
                 key={item.id}
-                whileHover={{ y: -2 }}
                 className="glass-strong rounded-2xl overflow-hidden flex flex-col"
               >
                 <div className="aspect-[4/3] overflow-hidden bg-black/30">
@@ -224,7 +222,7 @@ function OnlineOrderPage() {
                     )}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
           {filtered.length === 0 && (
@@ -237,9 +235,7 @@ function OnlineOrderPage() {
 
       {/* Floating cart bar */}
       {lines.length > 0 && !showCheckout && (
-        <motion.div
-          initial={{ y: 80 }}
-          animate={{ y: 0 }}
+        <div
           className="fixed bottom-4 left-4 right-4 z-30 max-w-2xl mx-auto"
         >
           <button
@@ -254,16 +250,12 @@ function OnlineOrderPage() {
               {sym} {total.toFixed(2)}
             </span>
           </button>
-        </motion.div>
+        </div>
       )}
 
       {/* Checkout modal */}
-      <AnimatePresence>
-        {showCheckout && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+      {showCheckout && (
+          <div
             className="fixed inset-0 z-50 bg-background/95 overflow-y-auto"
           >
             <div className="max-w-2xl mx-auto p-4 sm:p-6">
@@ -365,23 +357,16 @@ function OnlineOrderPage() {
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
 
       {/* Success */}
-      <AnimatePresence>
-        {success && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+      {success && (
+          <div
             className="fixed inset-0 z-50 bg-background/95 grid place-items-center p-4"
             onClick={() => setSuccess(null)}
           >
-            <motion.div
-              initial={{ scale: 0.9, y: 10 }}
-              animate={{ scale: 1, y: 0 }}
+            <div
               className="glass-strong rounded-2xl p-8 max-w-sm text-center border border-emerald-400/30"
               onClick={(e) => e.stopPropagation()}
             >
@@ -400,10 +385,9 @@ function OnlineOrderPage() {
               >
                 Continue Browsing
               </button>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
     </div>
   );
 }

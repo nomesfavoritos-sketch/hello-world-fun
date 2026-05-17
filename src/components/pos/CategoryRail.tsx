@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import {
   Sparkles,
   Pizza,
@@ -36,28 +35,20 @@ export function CategoryRail({
         const Icon = ICONS[c.icon as keyof typeof ICONS] ?? Sparkles;
         const isActive = active === c.id;
         return (
-          <motion.button
+          <button
             key={c.id}
             onClick={() => onChange(c.id)}
-            whileTap={{ scale: 0.95 }}
             className={`relative shrink-0 flex items-center gap-2 px-4 h-11 rounded-xl text-sm font-medium transition-colors ${
               isActive
-                ? "text-primary-foreground"
+                ? "bg-primary text-primary-foreground glow-red"
                 : "glass text-muted-foreground hover:text-foreground"
             }`}
           >
-            {isActive && (
-              <motion.span
-                layoutId="cat-bg"
-                className="absolute inset-0 rounded-xl bg-primary glow-red"
-                transition={{ type: "spring", stiffness: 380, damping: 30 }}
-              />
-            )}
             <span className="relative flex items-center gap-2">
               <Icon className="size-4" />
               {c.id}
             </span>
-          </motion.button>
+          </button>
         );
       })}
     </div>
