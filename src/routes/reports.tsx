@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion } from "framer-motion";
 import {
   Download,
   TrendingUp,
@@ -313,7 +312,7 @@ function ReportsPage() {
                 { label: "Avg Ticket", value: fmt(overview.avg), trend: "per order" },
                 { label: "Total Logged", value: String(sales.length), trend: "all-time", accent: "red" },
               ].map((s) => (
-                <motion.div key={s.label} whileHover={{ y: -2 }} className="glass-strong rounded-2xl p-4">
+                <div key={s.label} className="glass-strong rounded-2xl p-4">
                   <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{s.label}</p>
                   <p
                     className={`font-mono-num text-2xl font-bold mt-2 ${s.accent === "gold" ? "gradient-text-gold" : s.accent === "red" ? "gradient-text-red" : ""}`}
@@ -321,7 +320,7 @@ function ReportsPage() {
                     {s.value}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">{s.trend}</p>
-                </motion.div>
+                </div>
               ))}
             </div>
 
@@ -332,10 +331,8 @@ function ReportsPage() {
                 <div className="flex items-end gap-3 h-56">
                   {overview.week.map((d, i) => (
                     <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                      <motion.div
-                        initial={{ height: 0 }}
-                        animate={{ height: `${(d.v / max) * 100}%` }}
-                        transition={{ delay: i * 0.06, type: "spring" }}
+                      <div
+                        style={{ height: `${(d.v / max) * 100}%` }}
                         className="w-full rounded-t-lg bg-gradient-to-t from-primary/80 to-gold/60 relative min-h-[2px]"
                       >
                         {d.v > 0 && (
@@ -344,7 +341,7 @@ function ReportsPage() {
                             {(d.v / 1000).toFixed(1)}k
                           </span>
                         )}
-                      </motion.div>
+                      </div>
                       <span className="text-[10px] uppercase tracking-widest text-muted-foreground">{d.day}</span>
                     </div>
                   ))}
