@@ -25,12 +25,16 @@ export function Cart({
   onDec,
   onRemove,
   onClear,
+  mobileOpen = false,
+  onMobileClose,
 }: {
   lines: CartLine[];
   onInc: (id: string) => void;
   onDec: (id: string) => void;
   onRemove: (id: string) => void;
   onClear: () => void;
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
 }) {
   const sym = useCurrency();
   const subtotal = lines.reduce((s, l) => s + l.item.price * l.qty, 0);
