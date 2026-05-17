@@ -119,13 +119,13 @@ function MenuPage() {
   };
 
   return (
-    <div className="min-h-screen p-4">
-      <div className="flex gap-4 max-w-[1800px] mx-auto">
+    <div className="min-h-screen overflow-x-hidden p-3 sm:p-4">
+      <div className="flex flex-col lg:flex-row gap-4 max-w-[1800px] mx-auto">
         <Sidebar />
-        <main className="flex-1 min-w-0 flex flex-col gap-5">
+        <main className="flex-1 min-w-0 w-full flex flex-col gap-4 sm:gap-5">
           {/* Hero header */}
-          <div className="glass-strong rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
+          <div className="glass-strong rounded-2xl p-4 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 pl-16 lg:pl-6">
+            <div className="min-w-0">
               <p className="text-[10px] uppercase tracking-[0.3em] text-gold flex items-center gap-2">
                 <Sparkles className="size-3" /> Menu Manager
               </p>
