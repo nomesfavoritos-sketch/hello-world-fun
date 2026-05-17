@@ -37,8 +37,8 @@ export function TopBar({
   const firstName = me?.name?.split(" ")[0] ?? "GUEST";
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 pl-14 lg:pl-0">
-      <div className="min-w-0">
+    <div className="grid grid-cols-[44px_minmax(0,1fr)_44px] sm:flex sm:items-center gap-3 sm:gap-4 lg:pl-0">
+      <div className="col-start-2 min-w-0 sm:col-start-auto">
         <p className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-muted-foreground">
           Point of Sale
         </p>
@@ -48,8 +48,8 @@ export function TopBar({
         </h1>
       </div>
 
-      <div className="flex-1 flex items-center gap-2 sm:justify-end">
-        <div className="relative flex-1 sm:flex-none sm:w-72">
+      <div className="col-span-3 flex-1 flex items-center gap-2 sm:justify-end">
+        <div className="relative flex-1 min-w-0 sm:flex-none sm:w-72">
           <Search className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             value={query}
